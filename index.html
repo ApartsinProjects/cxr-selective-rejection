@@ -73,7 +73,7 @@
 <h3>3.1 Dataset</h3>
 <p>The classification task is formulated as multi-label, wherein each image can simultaneously exhibit one or more of four conditions: Cardiomegaly, Effusion, Edema, and Consolidation. In contrast to single-label classification, this setup accounts for the co-occurrence of multiple pathologies within a single image. To improve generalizability and account for variability in imaging protocols and patient populations, the dataset aggregates samples from multiple publicly available sources. Each image is labeled at the image level, and the labels are not mutually exclusive. The model produces a confidence score for each pathology, which is subsequently used by the rejection mechanism.</p>
 <table>
-<caption>Table 1: Class distribution for the four target pathologies. The dataset is imbalanced, with higher prevalence of Cardiomegaly and Effusion than the rarer Edema and Consolidation, and a substantial number of images carry multiple positive labels.</caption>
+<caption>Table 1: Class distribution for the four target pathologies, reported as positive-label counts across the aggregated multi-source pool (distinct from the per-source evaluation splits in Section 4). The dataset is imbalanced, with higher prevalence of Cardiomegaly and Effusion than the rarer Edema and Consolidation, and a substantial number of images carry multiple positive labels.</caption>
 <thead>
 <tr><th>Category</th><th>Positive count</th><th>Percentage (%)</th></tr>
 </thead>
