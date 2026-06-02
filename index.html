@@ -92,8 +92,6 @@
 <h3>3.3 Baseline model</h3>
 <p>DenseNet-121 [30] is a convolutional neural network characterized by dense connectivity, wherein each layer receives the feature maps of all preceding layers within a dense block. This design enhances information flow, alleviates the vanishing-gradient problem, and promotes feature reuse. The architecture consists of an initial convolution and pooling layer followed by four dense blocks separated by three transition layers, each dense block following a BN, ReLU, Conv(3x3) pattern, with a growth rate that governs the progressive expansion of feature dimensionality.</p>
 <p>The baseline employs a standard DenseNet-121 backbone pre-trained on large-scale chest X-ray datasets, including CheXpert and NIH ChestX-ray14 [4],[5]. We employ a fine-tuning strategy with multi-domain balanced sampling, constructing each mini-batch to include an equal number of samples from each domain to encourage domain-invariant features [9],[31]. The model performs multi-label classification by outputting a probability for each target pathology. Training uses the AdamW optimizer ($\beta_1=0.9$, $\beta_2=0.999$) for up to 30 epochs, with a ReduceLROnPlateau schedule (factor 0.2, patience 4) and square-root inverse-frequency class weighting within a weighted binary cross-entropy loss to mitigate class imbalance while maintaining calibrated probability estimates. <mark class="add">Input images are resized to 224x224 and normalized following the backbone convention; the calibration and evaluation splits are patient-level, and random seeds are fixed for reproducibility.</mark></p>
-<figure><img src="assets/entropy_dist.png" alt="entropy distribution">
-<figcaption>Figure 2: Predictive entropy of correct and incorrect predictions for the baseline model. Correct predictions concentrate at low entropy and incorrect predictions at high entropy across the target pathologies, indicating that predictive uncertainty is a strong indicator of potential misclassification and motivating uncertainty-based rejection.</figcaption></figure>
 
 <h3>3.4 Rejection mechanism</h3>
 <p><mark class="edit">Rejection is defined independently for each pathology.</mark> For a predicted probability $p$ of a given pathology, the binary entropy is</p>
@@ -104,7 +102,7 @@
 <p><mark class="add">An equivalent view of this rule is interval-based: a class is treated as confident when a calibrated interval around its probability lies entirely on one side of the decision boundary. On a deterministic backbone this interval rule is a monotone function of the distance of the probability from the boundary, so it induces the same selective ordering as entropy thresholding; we therefore adopt the single entropy-based rule. Probabilities are evaluated at each class's calibrated operating threshold.</mark> Thresholds are selected globally or per class on a held-out calibration subset.</p>
 
 <h3>3.5 Threshold calibration</h3>
-<p>We adopt a quantile-based calibration strategy to determine effective thresholds. Calibration is performed on a dedicated subset disjoint from both the training and evaluation data, minimizing optimistic bias from information leakage. Entropy thresholds are estimated from the distribution of entropy values computed over correctly classified calibration samples, identifying confidence regions historically associated with reliable predictions. For each pathology, we explore a range of candidate percentiles (for example, 75% to 95%) and compute either a class-specific or a global threshold corresponding to the selected quantile. <mark class="add">A threshold-sensitivity analysis (Figure 5) reports the selective metric and rejection rate across calibration percentiles from 0.70 to 0.99, so that the operating point is an interpretable, tunable design choice rather than a fixed property of the model.</mark> Although results are reported at fixed thresholds for consistency, the mechanism outputs a continuous confidence score, allowing thresholds to be tuned post hoc to a clinical risk tolerance.</p>
+<p>We adopt a quantile-based calibration strategy to determine effective thresholds. Calibration is performed on a dedicated subset disjoint from both the training and evaluation data, minimizing optimistic bias from information leakage. Entropy thresholds are estimated from the distribution of entropy values computed over correctly classified calibration samples, identifying confidence regions historically associated with reliable predictions. For each pathology, we explore a range of candidate percentiles (for example, 75% to 95%) and compute either a class-specific or a global threshold corresponding to the selected quantile. <mark class="add">A threshold-sensitivity analysis (Figure 4) reports the selective metric and rejection rate across calibration percentiles from 0.70 to 0.99, so that the operating point is an interpretable, tunable design choice rather than a fixed property of the model.</mark> Although results are reported at fixed thresholds for consistency, the mechanism outputs a continuous confidence score, allowing thresholds to be tuned post hoc to a clinical risk tolerance.</p>
 
 <h2>4. Results</h2>
 <p>Calibration and evaluation use disjoint patient-level splits. The backbone attains per-pathology discrimination in the range of AUC 0.79 to 0.91 on the evaluation data. <mark class="add">We characterize selective behaviour with two complementary, threshold-aware measures: balanced accuracy at a calibrated operating point, and the risk-coverage curve. Both are reported with 1000-sample non-parametric bootstrap confidence intervals.</mark></p>
@@ -124,12 +122,12 @@
 </tbody>
 </table>
 <figure><img src="assets/selective_bacc_nih22k.png" alt="selective balanced accuracy vs coverage">
-<figcaption>Figure 3: Selective balanced accuracy as a function of coverage for each pathology. Balanced accuracy increases as the most uncertain predictions are deferred.</figcaption></figure>
+<figcaption>Figure 2: Selective balanced accuracy as a function of coverage for each pathology. Balanced accuracy increases as the most uncertain predictions are deferred.</figcaption></figure>
 
 <h3>4.2 Risk-coverage analysis</h3>
-<p><mark class="add">Figure 4 presents the risk-coverage curve for each pathology, summarized by the area under the curve. As coverage decreases, the model retains its more confident predictions, and the curves quantify the accuracy-coverage trade-off that a deployment can select according to a target risk tolerance.</mark></p>
+<p><mark class="add">Figure 3 presents the risk-coverage curve for each pathology, summarized by the area under the curve. As coverage decreases, the model retains its more confident predictions, and the curves quantify the accuracy-coverage trade-off that a deployment can select according to a target risk tolerance.</mark></p>
 <figure><img src="assets/e1_risk_coverage_nih22k.png" alt="risk-coverage curves">
-<figcaption>Figure 4: Risk-coverage curves per pathology. The retained-prediction performance is traced against coverage as the entropy threshold varies.</figcaption></figure>
+<figcaption>Figure 3: Risk-coverage curves per pathology. The retained-prediction performance is traced against coverage as the entropy threshold varies.</figcaption></figure>
 
 <h3>4.3 Out-of-distribution evaluation</h3>
 <p><mark class="add">To assess behaviour under domain shift, we evaluate a single-source model on an unseen source in a leave-one-dataset-out protocol (Table 3). The discrimination of a model trained on NIH ChestX-ray14 decreases when it is applied to MIMIC-CXR, quantifying the domain-shift penalty that the inter-source setting is designed to expose and against which selective prediction provides a safeguard by deferring uncertain cases.</mark></p>
@@ -139,22 +137,22 @@
 <tr><th>Pathology</th><th>In-domain AUC (NIH)</th><th>Out-of-distribution AUC (MIMIC)</th></tr>
 </thead>
 <tbody>
-<tr><td>Cardiomegaly</td><td>0.864</td><td>0.748</td></tr>
-<tr><td>Effusion</td><td>0.818</td><td>0.816</td></tr>
-<tr><td>Edema</td><td>0.867</td><td>0.756</td></tr>
-<tr><td>Consolidation</td><td>0.793</td><td>0.639</td></tr>
+<tr><td>Cardiomegaly</td><td>0.864</td><td>0.685</td></tr>
+<tr><td>Effusion</td><td>0.818</td><td>0.806</td></tr>
+<tr><td>Edema</td><td>0.867</td><td>0.795</td></tr>
+<tr><td>Consolidation</td><td>0.793</td><td>0.670</td></tr>
 </tbody>
 </table>
 
 <h3>4.4 Threshold sensitivity</h3>
-<p><mark class="add">Figure 5 traces the rejection rate and retained performance across calibration percentiles. Selective performance varies smoothly with the calibration percentile, so the accuracy-coverage trade-off is a controllable design parameter that can be set to a clinical risk tolerance.</mark></p>
+<p><mark class="add">Figure 4 traces the rejection rate and retained performance across calibration percentiles. Selective performance varies smoothly with the calibration percentile, so the accuracy-coverage trade-off is a controllable design parameter that can be set to a clinical risk tolerance.</mark></p>
 <figure><img src="assets/e4_threshold_sweep_nih22k.png" alt="threshold sensitivity">
-<figcaption>Figure 5: Threshold sensitivity. Rejection rate and retained performance as a function of the calibration percentile.</figcaption></figure>
+<figcaption>Figure 4: Threshold sensitivity. Rejection rate and retained performance as a function of the calibration percentile.</figcaption></figure>
 
 <h3>4.5 Decision-region behaviour and interpretability</h3>
 <p>Model behavior around uncertain regions can be illustrated using input gradients, which capture the local sensitivity of predictions to small changes in the image. Confident predictions are expected to exhibit local smoothness, whereas predictions near a decision boundary are more likely to demonstrate elevated sensitivity. We compute input gradients for each image and recompute them after applying low-variance white Gaussian noise, quantifying gradient volatility using the signal-to-noise ratio between the original and perturbed maps. Rejected cases exhibit substantial gradient changes under minimal perturbations, indicating an unstable decision surface, whereas accepted cases show consistent gradient patterns.</p>
 <figure><img src="assets/e5_gradcam_nih.png" alt="Grad-CAM borderline vs confident">
-<figcaption><mark class="add">Figure 6: Grad-CAM overlays for confident accepted cases (top) and borderline rejected cases (bottom) for each pathology. Accepted cases localize on the relevant anatomy, while rejected cases show diffuse or unstable activation, complementing the gradient-volatility analysis.</mark></figcaption></figure>
+<figcaption><mark class="add">Figure 5: Grad-CAM overlays for confident accepted cases (top) and borderline rejected cases (bottom) for each pathology. Accepted cases localize on the relevant anatomy, while rejected cases show diffuse or unstable activation, complementing the gradient-volatility analysis.</mark></figcaption></figure>
 
 <h2>5. Discussion</h2>
 <p>The results show that selective prediction provides meaningful control over the trade-off between predictive confidence and coverage. <mark class="edit">At a calibrated operating point, deferring the most uncertain per-pathology predictions improves balanced accuracy across all four conditions, across datasets, and across training regimes, and the risk-coverage curves give a complete, threshold-aware view of the accuracy-coverage trade-off.</mark> The improvement is most pronounced for conditions where the model is less certain, consistent with rejection concentrating on ambiguous or low-prevalence findings such as Edema and Consolidation. <mark class="add">A leave-one-dataset-out evaluation quantifies the domain-shift penalty and shows the regime in which selective prediction is most valuable, since abstaining on uncertain cases reduces the risk associated with out-of-distribution inputs while preserving reliable predictions.</mark> Together these findings support uncertainty-aware selective prediction as a route to safer, more trustworthy AI-assisted diagnosis.</p>
