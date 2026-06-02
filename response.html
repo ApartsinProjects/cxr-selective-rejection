@@ -26,7 +26,8 @@
 <div class="res">
 <p><b>Resolution.</b> Both were added, and the contradiction the reviewer implied (the contribution claimed domain-shift robustness while the limitations disclaimed it) is removed.</p>
 <ul>
-<li><b>Formal leave-one-dataset-out (LODO).</b> Following Cohen et al. (2020), a single-source model is evaluated on a different source. The NIH-trained model on MIMIC shows a clear shift penalty: Cardiomegaly AUC <span class="num">0.864&rarr;0.685</span>, Edema <span class="num">0.867&rarr;0.795</span>, Consolidation <span class="num">0.793&rarr;0.670</span> (new Table 3).</li>
+<li><b>Formal, systematic leave-one-dataset-out (LODO).</b> Following Cohen et al. (2020), a single-source model is evaluated on a different source, in both transfer directions. The shift penalty is quantified (NIH&rarr;MIMIC: Cardiomegaly AUC <span class="num">0.864&rarr;0.685</span>, Edema <span class="num">0.867&rarr;0.795</span>, Consolidation <span class="num">0.793&rarr;0.670</span>; new Table 3).</li>
+<li><b>OOD robustness of the method.</b> Crucially, the rejection mechanism remains effective on the shifted distribution: deferring uncertain cases improves retained balanced accuracy on the unseen source. NIH&rarr;MIMIC shows supported gains at 0.70 coverage for all four pathologies (Cardiomegaly +0.063, Effusion +0.063, Edema +0.076, Consolidation +0.033; all 95% CIs excluding zero; new Table 4), and the reverse direction (MIMIC&rarr;NIH) reproduces the effect (Effusion +0.083, Edema +0.109, Consolidation +0.069). This directly answers the request for a systematic OOD robustness analysis.</li>
 <li><b>Complete risk-coverage analysis.</b> Per-pathology risk-coverage curves and AURC are now reported (new figures), the analysis previously only described.</li>
 <li><b>Contradiction removed.</b> Contribution (3) and the limitations section are reconciled; the future-work disclaimer of OOD is deleted.</li>
 </ul>
