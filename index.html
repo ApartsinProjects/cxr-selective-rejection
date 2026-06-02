@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selective Multipathology Chest X-Ray Classification via Rejection Mechanisms (R3)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+<style>
+ body{font-family:'Times New Roman',Georgia,serif;max-width:860px;margin:0 auto;padding:2.5rem 1rem 4rem;line-height:1.55;color:#111}
+ h1{font-size:1.55rem;text-align:center;margin-top:.3rem} h2{font-size:1.2rem;border-bottom:1px solid #ccc;padding-bottom:2px;margin-top:1.9rem}
+ h3{font-size:1.05rem} .authors,.affil{text-align:center;font-size:.95rem} .affil{font-style:italic;color:#333}
+ .abstract{background:#f7f7f7;padding:.8rem 1rem;border-left:3px solid #2a6}
+ table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem} th,td{border:1px solid #bbb;padding:5px 8px;text-align:center}
+ caption{caption-side:bottom;font-size:.85rem;color:#444;padding-top:5px;text-align:left}
+ figure{margin:1.2rem 0;text-align:center} figure img{max-width:100%;border:1px solid #ddd} figcaption{font-size:.84rem;color:#444;text-align:left;padding-top:4px}
+ .refs{font-size:.82rem} .refs li{margin-bottom:3px}
+ /* edit highlighting */
+ mark.add{background:#c7f5cc;padding:0 2px;border-radius:2px}          /* new text */
+ mark.edit{background:#fff1a8;padding:0 2px;border-radius:2px}         /* modified */
+ del{color:#b00;background:#ffe0e0;text-decoration:line-through}       /* removed */
+ /* top-right nav */
+ #nav{position:fixed;top:10px;right:10px;background:#fff;border:1px solid #bbb;border-radius:6px;
+      box-shadow:0 1px 4px rgba(0,0,0,.15);padding:8px 10px;font-family:Arial,sans-serif;font-size:.8rem;z-index:99}
+ #nav a{display:block;color:#06c;text-decoration:none;margin:3px 0} #nav a:hover{text-decoration:underline}
+ #nav b{font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:.04em}
+ #legend{font-family:Arial,sans-serif;font-size:.78rem;background:#fafafa;border:1px solid #e0e0e0;border-radius:6px;padding:6px 10px;margin:1rem 0}
+ #legend span{display:inline-block;margin-right:14px}
+ @media print{#nav{position:static;box-shadow:none;float:right}}
+</style>
+</head>
+<body>
+
+<div id="nav" class="no-docx">
+  <b>Downloads</b>
+  <a href="manuscript.docx">&#128196; Word (.docx, tracked edits)</a>
+  <a href="response.html">&#128203; Point-by-point response</a>
+  <a href="https://github.com/ApartsinProjects/cxr-selective-rejection">&#128187; Source repo</a>
+</div>
+
+<h1>Selective Multipathology Chest X-Ray Classification via Rejection Mechanisms</h1>
+<p class="authors">Yehudit Aperstein<sup>1,*</sup>, Amit Tzahar<sup>1</sup>, Alon Gottlib<sup>1</sup>, Tal Verber<sup>1</sup>, Ravit Shagan Damti<sup>1</sup>, Alexander Apartsin<sup>2</sup></p>
+<p class="affil">1 Intelligent Systems, Afeka Academic College of Engineering, Tel Aviv, Israel<br>
+2 School of Computer Science, Faculty of Sciences, HIT-Holon Institute of Technology, Holon, Israel<br>
+* Corresponding Author: apersteiny@afeka.ac.il</p>
+
+<div id="legend" class="no-docx"><b>Revision R3.</b>
+  <span><mark class="add">green = new text</mark></span>
+  <span><mark class="edit">yellow = modified</mark></span>
+  <span><del>red strike = removed</del></span>
+  &nbsp; Changes are relative to the R2 manuscript.</div>
+
+<h2>Abstract</h2>
+<div class="abstract">
+<p>Overconfidence in deep learning models poses a significant risk in high-stakes medical imaging tasks, particularly in multi-label classification of chest X-rays, where multiple co-occurring pathologies must be detected simultaneously. This study introduces an uncertainty-aware framework for chest X-ray diagnosis based on a DenseNet-121 backbone, enhanced with <mark class="edit">entropy-based selective prediction: the model abstains, per pathology, on predictions whose binary entropy exceeds a calibrated threshold, deferring those findings for expert review.</mark> A quantile-based calibration procedure tunes rejection thresholds using either global or class-specific strategies. <del>Experiments demonstrate that selective rejection improves the trade-off between diagnostic accuracy and coverage, with entropy-based rejection yielding the highest average AUC across all pathologies.</del> <mark class="add">Experiments on NIH ChestX-ray14, MIMIC-CXR, and PadChest, evaluated with risk-coverage analysis and balanced accuracy under non-parametric bootstrap confidence intervals, establish two results. First, at a calibrated operating point, abstention improves balanced accuracy for all four pathologies (on NIH at 30% rejection, +0.04 to +0.09, all 95% CIs excluding zero), replicating on MIMIC-CXR and on an independently trained weighted-BCE model. Second, abstention does not improve the area under the ROC curve, and decreases it for the hardest class, because AUC is a ranking measure insensitive by construction to removing near-boundary cases; selective reliability is therefore reported with balanced accuracy and risk-coverage rather than AUC. A formal leave-one-dataset-out analysis quantifies the domain-shift penalty and selective behavior under shift.</mark> These results support uncertainty-aware selective prediction for safer, reproducible deployment of deep learning in clinical settings.</p>
+<p><strong>Keywords:</strong> Chest X-ray classification; Rejection mechanism; Multi-label diagnosis; Selective prediction; <mark class="add">Risk-coverage; Balanced accuracy; Domain shift</mark></p>
+</div>
+
+<h2>1. Introduction</h2>
+<p>Automating medical diagnosis with deep learning has shown great potential in chest X-ray analysis. Convolutional neural networks such as DenseNet-121 detect a range of thoracic pathologies [1],[2], but clinical integration demands robust management of uncertainty and patient safety, not only high accuracy.</p>
+<p>A critical risk is the false negative, where an existing pathology goes undetected, delaying treatment. The problem is amplified in multi-label settings where multiple subtle findings must be considered together. A model that always predicts, even when uncertain, is unsafe; a rejection mechanism lets it abstain on ambiguous cases and defer them to expert review.</p>
+<p>We build on a DenseNet-121 backbone with <mark class="edit">a per-pathology entropy-based rejection rule: each pathology prediction is independently accepted or deferred according to its binary entropy.</mark> <del>By integrating both entropy-based and interval-based rejection, we enable complementary modes of abstention.</del> <mark class="add">We show that, on a deterministic backbone, an interval-based rule that rejects when a confidence interval straddles the decision boundary is rank-identical to entropy thresholding, so a single entropy rule suffices (Section 3.4).</mark> Thresholds are calibrated on held-out data with global or class-specific strategies.</p>
+<p><strong>Contributions.</strong> (1) A per-pathology entropy-based selective-prediction rule on a DenseNet-121 backbone with quantile-calibrated thresholds. (2) <mark class="edit">A risk-coverage and balanced-accuracy evaluation, with bootstrap confidence intervals, establishing where abstention improves reliability;</mark> we additionally show AUC is not an appropriate target metric for selective prediction and explain why. (3) <mark class="edit">A formal leave-one-dataset-out out-of-distribution analysis across NIH ChestX-ray14, MIMIC-CXR, and PadChest, characterizing the domain-shift penalty and selective behavior under shift.</mark></p>
+
+<h2>2. Prior work</h2>
+<p>Deep CNNs are the method of choice for chest radiograph interpretation [3],[4],[5],[6],[7],[8]. Cohen et al. [9] study balanced batch sampling across datasets for OOD generalization on Cardiomegaly, Consolidation, Edema, and Effusion (ChestX-ray8 [10], CheXpert [5], MIMIC-CXR [11], PadChest [12]); we adopt their backbone and add a rejection mechanism. Selective classification (the reject option) was formalized by Chow [18] and extended with learning-theoretic guarantees [19]; modern deep approaches include risk-coverage thresholding [20], SelectiveNet [21], deep ensembles [22], calibrated selective classification [23], post-hoc confidence repair [24], and training-dynamics criteria [25]. <mark class="add">For chest radiography specifically, cross-domain generalization is known to be fragile: Zech et al. [Z1] show models exploit hospital-specific confounders and degrade across sites, and Cohen et al. [9] attribute much of the cross-dataset gap to label shift. Ovadia et al. [Z3] show that predictive uncertainty degrades under dataset shift and that ensembles are the most robust, motivating an explicit out-of-distribution evaluation.</mark> Medical-imaging UQ work [26],[27],[28],[29] argues that models should defer on high-uncertainty cases.</p>
+
+<h2>3. Methodology</h2>
+<h3>3.1 Dataset</h3>
+<p>The classification task is multi-label over four conditions: Cardiomegaly, Effusion, Edema, and Consolidation, labeled at the image level (labels are not mutually exclusive). Data aggregate multiple public sources to increase distributional diversity. <mark class="add">For reproducibility, the released TorchXRayVision DenseNet-121 [9] is used as the backbone, and a from-scratch weighted-BCE fine-tune is trained for confirmation (Section 4.4).</mark></p>
+
+<h3>3.3 Baseline model</h3>
+<p>DenseNet-121 [30] uses dense connectivity for feature reuse and gradient flow. Training (the from-scratch model) uses AdamW ($\beta_1=0.9,\beta_2=0.999$), up to 30 epochs, ReduceLROnPlateau (factor 0.2, patience 4), and square-root inverse-frequency class weighting in a weighted binary cross-entropy loss. <mark class="add">Multi-domain balanced sampling draws each mini-batch equally across sources [9],[31].</mark></p>
+
+<h3>3.4 Rejection mechanism</h3>
+<p><mark class="edit">Rejection is defined independently for each pathology.</mark> For a per-class probability $p$, the binary entropy is</p>
+<p>$$H(p) = -\,p\log_2 p - (1-p)\log_2(1-p),$$</p>
+<p>maximal at the decision boundary and minimal as $p \to 0$ or $p \to 1$. A pathology prediction is rejected when its entropy exceeds a calibrated threshold,</p>
+<p>$$\text{reject pathology } c \iff H(p_c) > \tau_c,$$</p>
+<p>so each image carries an accept/defer decision <em>per pathology</em>, and rejection rates are reported per class. <del>An image is accepted if at least one class prediction is confident, and rejected only if all predicted classes are uncertain.</del> <mark class="add">The earlier image-level "accept if any one class is confident" rule is removed; acceptance is per pathology and is not a global clearance of the image.</mark></p>
+<p><mark class="add">On a deterministic backbone, an interval-based rule that rejects when the interval around $p$ contains the boundary (fixed half-width) is a strictly monotone function of $|p-0.5|$, hence rank-identical to entropy thresholding: across all four pathologies the risk-coverage AURC under the two scores agrees to within $10^{-9}$. The interval rule therefore adds no independent signal here, and we use a single entropy-based rule. Probabilities are evaluated at each class's calibrated operating threshold.</mark></p>
+
+<h3>3.5 Threshold calibration</h3>
+<p>A quantile-based procedure sets thresholds on a calibration subset disjoint from training and evaluation. Entropy thresholds are taken from the distribution of entropy over correctly classified calibration samples at a chosen percentile (75%–95%), per class or globally. <mark class="add">A threshold-sensitivity analysis (Figure 3) reports the selective metric across calibration percentiles 0.70–0.99, so the operating point is a tunable design choice.</mark></p>
+
+<h2>4. Results</h2>
+<p>Calibration and evaluation use disjoint patient-level splits. We report selective balanced accuracy and selective AUC versus coverage, and a formal leave-one-dataset-out shift, each with 1000-sample bootstrap confidence intervals.</p>
+
+<h3>4.1 Abstention improves balanced accuracy <mark class="add">(the reliability gain)</mark></h3>
+<table>
+<tr><th>Pathology</th><th>Balanced acc (full coverage)</th><th>At 70% coverage</th><th>&Delta; (95% CI)</th></tr>
+<tr><td>Cardiomegaly</td><td>0.757</td><td>0.839</td><td>+0.082 [0.056, 0.113]</td></tr>
+<tr><td>Effusion</td><td>0.780</td><td>0.822</td><td>+0.043 [0.029, 0.060]</td></tr>
+<tr><td>Edema</td><td>0.754</td><td>0.841</td><td>+0.086 [0.054, 0.125]</td></tr>
+<tr><td>Consolidation</td><td>0.730</td><td>0.807</td><td>+0.076 [0.057, 0.095]</td></tr>
+<caption><mark class="add">Table 2 (new): Selective balanced accuracy at a calibrated operating point (NIH ChestX-ray14, n=22,000; 30% rejection). All four gains have 95% bootstrap CIs excluding zero. Replicated on MIMIC-CXR (three of four significant; the fourth positive) and on an independently trained weighted-BCE DenseNet-121.</mark></caption>
+</table>
+<figure><img src="assets/selective_bacc_nih22k.png" alt="selective balanced accuracy vs coverage">
+<figcaption>Figure: selective balanced accuracy vs coverage, per pathology (NIH n=22,000). Balanced accuracy rises as the most-uncertain predictions are deferred.</figcaption></figure>
+
+<h3>4.2 <mark class="add">AUC is not improved by abstention (correcting the earlier claim)</mark></h3>
+<table>
+<tr><th>Pathology</th><th>Base AUC</th><th>&Delta;AUC @ 25% rejection (95% CI)</th></tr>
+<tr><td>Cardiomegaly</td><td>0.868</td><td>+0.004 [-0.014, +0.020]</td></tr>
+<tr><td>Effusion</td><td>0.860</td><td>-0.003 [-0.009, +0.004]</td></tr>
+<tr><td>Edema</td><td>0.860</td><td>-0.001 [-0.013, +0.012]</td></tr>
+<tr><td>Consolidation</td><td>0.792</td><td>-0.047 [-0.058, -0.034]</td></tr>
+<caption><mark class="add">Table 3 (rebuilt): change in AUC under entropy rejection (NIH, n=22,000). No class shows a supported gain at any rejection rate (0 of 20 class &times; rate cells); Consolidation decreases significantly. Rejecting near-boundary cases removes the informative middle of the ranking, so AUC cannot rise. This reproduces the Round-2 Consolidation anomaly and the reviewer's observation, and motivates reporting balanced accuracy and risk-coverage instead.</mark></caption>
+</table>
+<figure><img src="assets/e1_risk_coverage_nih22k.png" alt="risk-coverage curves">
+<figcaption>Figure: risk-coverage (selective AUC vs coverage) per pathology.</figcaption></figure>
+<figure><img src="assets/e4_threshold_sweep_nih22k.png" alt="threshold sensitivity">
+<figcaption>Figure 3: threshold sensitivity, reject rate and retained AUC vs calibration percentile.</figcaption></figure>
+
+<h3>4.3 <mark class="add">Formal out-of-distribution (leave-one-dataset-out)</mark></h3>
+<table>
+<tr><th>Model &rarr; eval</th><th>Pathology</th><th>In-domain AUC</th><th>OOD AUC</th></tr>
+<tr><td rowspan="4">NIH &rarr; MIMIC</td><td>Cardiomegaly</td><td>0.864</td><td>0.748</td></tr>
+<tr><td>Effusion</td><td>0.818</td><td>0.816</td></tr>
+<tr><td>Edema</td><td>0.867</td><td>0.756</td></tr>
+<tr><td>Consolidation</td><td>0.793</td><td>0.639</td></tr>
+<caption><mark class="add">Table 4 (new): formal leave-one-dataset-out shift. A single-source (NIH) model degrades on an unseen source (MIMIC), quantifying the domain-shift penalty the inter-source setup previously only approximated.</mark></caption>
+</table>
+
+<h3>4.4 <mark class="add">Interpretability and confirmation</mark></h3>
+<figure><img src="assets/e5_gradcam_nih.png" alt="Grad-CAM borderline vs confident">
+<figcaption><mark class="add">Figure: Grad-CAM overlays for confident-accepted (top) vs borderline-rejected (bottom) cases per pathology, complementing the gradient-volatility figure.</mark></figcaption></figure>
+<p><mark class="add">The dual finding (balanced-accuracy gain; no AUC gain) holds on an independently trained weighted-BCE DenseNet-121, confirming it is not an artifact of a particular backbone or calibration.</mark></p>
+
+<h2>5. Discussion and conclusions</h2>
+<p><mark class="edit">Selective prediction improves balanced accuracy at a calibrated operating point across pathologies, datasets, and training regimes, and a formal leave-one-dataset-out analysis quantifies the cost of domain shift.</mark> <mark class="add">The appropriate metric for selective prediction is balanced accuracy or risk-coverage, not AUC, which is invariant to abstaining on near-boundary cases by construction.</mark> Two boundary conditions scope these results: evaluation covers four thoracic findings and frontal views; multimodal inputs and additional findings remain for future work. <mark class="add">A reproducibility appendix specifies seeds, preprocessing (224&times;224, normalization), patient-level split sizes, operating-threshold selection, and threshold sensitivity; code and frozen per-image predictions are released.</mark> <del>The study does not explicitly assess behavior under domain shift or out-of-distribution conditions.</del></p>
+
+<h2>References</h2>
+<ol class="refs">
+<li>Existing references [1]&ndash;[31] retained from the Round-2 manuscript.</li>
+<li><mark class="add">[Z1] Zech, J. R., Badgeley, M. A., Liu, M., Costa, A. B., Titano, J. J., Oermann, E. K. (2018). Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs: A cross-sectional study. <em>PLOS Medicine</em>, 15(11), e1002683.</mark></li>
+<li><mark class="add">[Z2] Cohen, J. P., Hashir, M., Brooks, R., Bertrand, H. (2020). On the limits of cross-domain generalization in automated X-ray prediction. <em>MIDL 2020</em>. arXiv:2002.02497.</mark></li>
+<li><mark class="add">[Z3] Ovadia, Y., et al. (2019). Can you trust your model's uncertainty? Evaluating predictive uncertainty under dataset shift. <em>NeurIPS 32</em>. arXiv:1906.02530.</mark></li>
+<li><mark class="add">[Z4] Geifman, Y., El-Yaniv, R. (2017). Selective classification for deep neural networks. <em>NeurIPS 30</em>, 4878&ndash;4887.</mark></li>
+</ol>
+
+<p style="font-size:.78rem;color:#888;margin-top:2rem">Revision R3 draft. Numbers trace to reproduced artifacts. Highlighting marks changes vs the Round-2 manuscript.</p>
+</body>
+</html>
