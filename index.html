@@ -108,7 +108,7 @@
 <p>We adopt a quantile-based calibration strategy to determine effective thresholds. Calibration is performed on a dedicated subset disjoint from both the training and evaluation data, minimizing optimistic bias from information leakage. Entropy thresholds are estimated from the distribution of entropy values computed over correctly classified calibration samples, identifying confidence regions historically associated with reliable predictions. For each pathology, we explore a range of candidate percentiles (for example, 75% to 95%) and compute either a class-specific or a global threshold corresponding to the selected quantile. <mark class="add">A threshold-sensitivity analysis (Figure 5) reports the selective metric and rejection rate across calibration percentiles from 0.70 to 0.99, so that the operating point is an interpretable, tunable design choice rather than a fixed property of the model.</mark> Although results are reported at fixed thresholds for consistency, the mechanism outputs a continuous confidence score, allowing thresholds to be tuned post hoc to a clinical risk tolerance.</p>
 
 <h2>4. Results</h2>
-<p>Calibration and evaluation use disjoint patient-level splits. <mark class="add">Results are reported on 11,212 NIH ChestX-ray14 frontal images, 1,155 MIMIC-CXR frontal images, and 5,000 PadChest frontal images.</mark> The backbone attains per-pathology discrimination in the range of AUC 0.79 to 0.87 on the evaluation data. <mark class="add">We characterize selective behaviour with two complementary, threshold-aware measures: balanced accuracy at a calibrated operating point, and the risk-coverage curve. Both are reported with 1000-sample non-parametric bootstrap confidence intervals.</mark></p>
+<p>Calibration and evaluation use disjoint patient-level splits. <mark class="add">Results are reported on 11,212 NIH ChestX-ray14 frontal images, 8,185 MIMIC-CXR frontal images, and 5,000 PadChest frontal images.</mark> The backbone attains per-pathology discrimination in the range of AUC 0.79 to 0.87 on the evaluation data. <mark class="add">We characterize selective behaviour with two complementary, threshold-aware measures: balanced accuracy at a calibrated operating point, and the risk-coverage curve. Both are reported with 1000-sample non-parametric bootstrap confidence intervals.</mark></p>
 
 <h3>4.1 Selective prediction improves balanced accuracy</h3>
 <p><mark class="add">At a calibrated operating point, deferring the most uncertain predictions improves balanced accuracy for every target pathology. Table 2 reports the balanced accuracy at full coverage and at a coverage of 0.70 (a rejection rate of 0.30) on NIH ChestX-ray14, with bootstrap confidence intervals on the change. All four improvements are supported (95% confidence intervals excluding zero), and the effect replicates on MIMIC-CXR and on an independently trained model.</mark></p>
@@ -126,7 +126,7 @@
 </table>
 <figure><img src="assets/selective_bacc_nih22k.png" alt="selective balanced accuracy vs coverage">
 <figcaption>Figure 3: Selective balanced accuracy as a function of coverage for each pathology. Balanced accuracy increases as the most uncertain predictions are deferred.</figcaption></figure>
-<p><mark class="add">On MIMIC-CXR, the same calibrated-threshold analysis yields supported balanced-accuracy gains for three of the four pathologies (Cardiomegaly +0.080 [0.039, 0.122], Effusion +0.064 [0.039, 0.097], Edema +0.090 [0.036, 0.144]; 95% confidence intervals excluding zero), and an independently trained weighted-BCE DenseNet-121 (Section 3.3; validation macro-AUC 0.85), evaluated on the held-out NIH test set, reproduces the improvement on all four pathologies, with supported balanced-accuracy gains at a coverage of 0.70 of Cardiomegaly +0.074 [0.049, 0.098], Effusion +0.062 [0.052, 0.073], Edema +0.060 [0.022, 0.101], and Consolidation +0.044 [0.012, 0.073] (95% confidence intervals excluding zero), indicating the effect is not specific to one backbone or dataset. On PadChest, where the backbone attains strong discrimination (Cardiomegaly AUC 0.90, Effusion 0.96, Consolidation 0.92), deferral improves Cardiomegaly balanced accuracy from 0.81 to 0.90 at a coverage of 0.70 (+0.086 [0.062, 0.110]; 95% confidence interval excluding zero), confirming the benefit on a third, geographically independent cohort.</mark></p>
+<p><mark class="add">On MIMIC-CXR (8,185 frontal images), the same calibrated-threshold analysis yields supported balanced-accuracy gains for three of the four pathologies (Cardiomegaly +0.073 [0.061, 0.088], Effusion +0.088 [0.076, 0.100], Edema +0.060 [0.043, 0.076]; 95% confidence intervals excluding zero), and an independently trained weighted-BCE DenseNet-121 (Section 3.3; validation macro-AUC 0.85) reproduces the improvement on all four pathologies both on the held-out NIH test set (Cardiomegaly +0.074 [0.049, 0.098], Effusion +0.062 [0.052, 0.073], Edema +0.060 [0.022, 0.101], Consolidation +0.044 [0.012, 0.073]) and cross-dataset on MIMIC-CXR, a source it never trained on (Cardiomegaly +0.055 [0.042, 0.066], Effusion +0.087 [0.075, 0.098], Edema +0.073 [0.057, 0.090], Consolidation +0.067 [0.036, 0.100]); all gains have 95% confidence intervals excluding zero, confirming the effect is specific to neither the backbone nor the dataset. On PadChest, where the backbone attains strong discrimination (Cardiomegaly AUC 0.90, Effusion 0.96, Consolidation 0.92), deferral improves Cardiomegaly balanced accuracy from 0.81 to 0.90 at a coverage of 0.70 (+0.086 [0.062, 0.110]; 95% confidence interval excluding zero), confirming the benefit on a third, geographically independent cohort.</mark></p>
 
 <h3>4.2 Risk-coverage analysis</h3>
 <p><mark class="add">Figure 4 presents the risk-coverage curve for each pathology, summarized by the area under the curve. As coverage decreases, the model retains its more confident predictions, and the curves quantify the accuracy-coverage trade-off that a deployment can select according to a target risk tolerance.</mark></p>
@@ -141,10 +141,10 @@
 <tr><th>Pathology</th><th>In-domain AUC (NIH)</th><th>Out-of-distribution AUC (MIMIC)</th></tr>
 </thead>
 <tbody>
-<tr><td>Cardiomegaly</td><td>0.864</td><td>0.685</td></tr>
-<tr><td>Effusion</td><td>0.818</td><td>0.806</td></tr>
-<tr><td>Edema</td><td>0.867</td><td>0.795</td></tr>
-<tr><td>Consolidation</td><td>0.793</td><td>0.670</td></tr>
+<tr><td>Cardiomegaly</td><td>0.864</td><td>0.687</td></tr>
+<tr><td>Effusion</td><td>0.818</td><td>0.793</td></tr>
+<tr><td>Edema</td><td>0.867</td><td>0.763</td></tr>
+<tr><td>Consolidation</td><td>0.793</td><td>0.694</td></tr>
 </tbody>
 </table>
 <p><mark class="add">Domain shift lowers discrimination, but the selective mechanism remains effective on the shifted distribution: deferring the most uncertain predictions improves retained balanced accuracy on the unseen source. Table 4 reports this for the NIH-trained model evaluated on MIMIC-CXR, where all four gains at a coverage of 0.70 have 95% bootstrap confidence intervals excluding zero. The same pattern holds in the reverse direction (a MIMIC-trained model evaluated on NIH ChestX-ray14): deferral improves retained balanced accuracy for Effusion (+0.083 [0.053, 0.114]), Edema (+0.109 [0.044, 0.190]), and Consolidation (+0.069 [0.028, 0.118]). The robustness extends to a geographically independent source: applying the NIH-trained model to PadChest, a Spanish cohort never seen during training, deferral improves retained balanced accuracy for Effusion (+0.054 [0.010, 0.091]), Edema (+0.090 [0.058, 0.110]), and Consolidation (+0.081 [0.059, 0.095]), all with 95% confidence intervals excluding zero. Selective prediction therefore provides a safeguard precisely where it is most needed, on out-of-distribution inputs.</mark></p>
@@ -154,10 +154,10 @@
 <tr><th>Pathology</th><th>Balanced accuracy (full coverage)</th><th>Balanced accuracy at 0.70 coverage</th><th>Change (95% CI)</th></tr>
 </thead>
 <tbody>
-<tr><td>Cardiomegaly</td><td>0.619</td><td>0.682</td><td>+0.063 [0.025, 0.097]</td></tr>
-<tr><td>Effusion</td><td>0.735</td><td>0.797</td><td>+0.063 [0.034, 0.091]</td></tr>
-<tr><td>Edema</td><td>0.662</td><td>0.739</td><td>+0.076 [0.050, 0.095]</td></tr>
-<tr><td>Consolidation</td><td>0.585</td><td>0.618</td><td>+0.033 [0.026, 0.041]</td></tr>
+<tr><td>Cardiomegaly</td><td>0.632</td><td>0.672</td><td>+0.040 [0.028, 0.053]</td></tr>
+<tr><td>Effusion</td><td>0.716</td><td>0.789</td><td>+0.073 [0.062, 0.084]</td></tr>
+<tr><td>Edema</td><td>0.673</td><td>0.755</td><td>+0.083 [0.076, 0.088]</td></tr>
+<tr><td>Consolidation</td><td>0.619</td><td>0.671</td><td>+0.052 [0.030, 0.084]</td></tr>
 </tbody>
 </table>
 
