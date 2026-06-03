@@ -74,16 +74,16 @@
 <h3>3.1 Dataset</h3>
 <p>The classification task is formulated as multi-label, wherein each image can simultaneously exhibit one or more of four conditions: Cardiomegaly, Effusion, Edema, and Consolidation. In contrast to single-label classification, this setup accounts for the co-occurrence of multiple pathologies within a single image. To improve generalizability and account for variability in imaging protocols and patient populations, the dataset aggregates samples from multiple publicly available sources. Each image is labeled at the image level, and the labels are not mutually exclusive. The model produces a confidence score for each pathology, which is subsequently used by the rejection mechanism.</p>
 <table>
-<caption>Table 1: Class distribution of the evaluation data across the three sources (NIH ChestX-ray14, MIMIC-CXR, and PadChest; N = 17,367 frontal images), reported as positive-label counts. The data is imbalanced, with Effusion and Cardiomegaly more prevalent than the rarer Edema and Consolidation, and a subset of images carry multiple positive labels.</caption>
+<caption>Table 1: Class distribution of the evaluation data across the three sources (NIH ChestX-ray14, MIMIC-CXR, and PadChest; N = 24,397 frontal images), reported as positive-label counts. The data is imbalanced, with Effusion and Cardiomegaly more prevalent than the rarer Edema and Consolidation, and a subset of images carry multiple positive labels.</caption>
 <thead>
 <tr><th>Category</th><th>Positive count</th><th>Percentage (%)</th></tr>
 </thead>
 <tbody>
-<tr><td>Cardiomegaly</td><td>921</td><td>5.3</td></tr>
-<tr><td>Effusion</td><td>1955</td><td>11.3</td></tr>
-<tr><td>Edema</td><td>406</td><td>2.3</td></tr>
-<tr><td>Consolidation</td><td>622</td><td>3.6</td></tr>
-<tr><td>Multi-Pathology</td><td>573</td><td>3.3</td></tr>
+<tr><td>Cardiomegaly</td><td>2284</td><td>9.4</td></tr>
+<tr><td>Effusion</td><td>3608</td><td>14.8</td></tr>
+<tr><td>Edema</td><td>1255</td><td>5.1</td></tr>
+<tr><td>Consolidation</td><td>959</td><td>3.9</td></tr>
+<tr><td>Multi-Pathology</td><td>1661</td><td>6.8</td></tr>
 </tbody>
 </table>
 <figure><img src="assets/examples.png" alt="example chest X-rays">
