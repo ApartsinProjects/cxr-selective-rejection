@@ -19,6 +19,8 @@
  .refs{font-size:.82rem} .refs li{margin-bottom:3px}
  mark.add{background:#d8f5dd;padding:0 1px}   /* added in this version */
  mark.edit{background:#fff3b0;padding:0 1px}  /* revised in this version */
+ table.added td{background:#d8f5dd}   /* table added this version */
+ table.edited td{background:#fff3b0} /* table values revised this version */
  .keynote{font-size:.78rem;color:#777;font-style:italic;text-align:center;margin:.4rem 0 1.4rem}
  #nav{position:fixed;top:10px;right:10px;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.15);padding:8px 10px;font-family:Arial,sans-serif;font-size:.8rem;z-index:99}
  #nav a{display:block;color:#06c;text-decoration:none;margin:3px 0} #nav b{font-size:.72rem;color:#666;text-transform:uppercase}
@@ -73,8 +75,8 @@
 
 <h3>3.1 Dataset</h3>
 <p>The classification task is formulated as multi-label, wherein each image can simultaneously exhibit one or more of four conditions: Cardiomegaly, Effusion, Edema, and Consolidation. In contrast to single-label classification, this setup accounts for the co-occurrence of multiple pathologies within a single image. To improve generalizability and account for variability in imaging protocols and patient populations, the dataset aggregates samples from multiple publicly available sources. Each image is labeled at the image level, and the labels are not mutually exclusive. The model produces a confidence score for each pathology, which is subsequently used by the rejection mechanism.</p>
-<table>
-<caption>Table 1: Class distribution of the evaluation data across the three sources (NIH ChestX-ray14, MIMIC-CXR, and PadChest; N = 24,397 frontal images), reported as positive-label counts. The data is imbalanced, with Effusion and Cardiomegaly more prevalent than the rarer Edema and Consolidation, and a subset of images carry multiple positive labels.</caption>
+<table class="edited">
+<caption><mark class="edit">Table 1: Class distribution of the evaluation data across the three sources (NIH ChestX-ray14, MIMIC-CXR, and PadChest; N = 24,397 frontal images), reported as positive-label counts. The data is imbalanced, with Effusion and Cardiomegaly more prevalent than the rarer Edema and Consolidation, and a subset of images carry multiple positive labels.</mark></caption>
 <thead>
 <tr><th>Category</th><th>Positive count</th><th>Percentage (%)</th></tr>
 </thead>
@@ -112,8 +114,8 @@
 
 <h3>4.1 Selective prediction improves balanced accuracy</h3>
 <p><mark class="add">At a calibrated operating point, deferring the most uncertain predictions improves balanced accuracy for every target pathology. Table 2 reports the balanced accuracy at full coverage and at a coverage of 0.70 (a rejection rate of 0.30) on NIH ChestX-ray14, with bootstrap confidence intervals on the change. All four improvements are supported (95% confidence intervals excluding zero), and the effect replicates on MIMIC-CXR and on an independently trained model.</mark></p>
-<table>
-<caption>Table 2: Selective balanced accuracy at a calibrated operating point (NIH ChestX-ray14, rejection rate 0.30). All four gains have 95% bootstrap confidence intervals excluding zero.</caption>
+<table class="added">
+<caption><mark class="add">Table 2: Selective balanced accuracy at a calibrated operating point (NIH ChestX-ray14, rejection rate 0.30). All four gains have 95% bootstrap confidence intervals excluding zero.</mark></caption>
 <thead>
 <tr><th>Pathology</th><th>Balanced accuracy (full coverage)</th><th>Balanced accuracy at 0.70 coverage</th><th>Change (95% CI)</th></tr>
 </thead>
@@ -135,8 +137,8 @@
 
 <h3>4.3 Out-of-distribution evaluation</h3>
 <p><mark class="add">To assess behaviour under domain shift, we evaluate a single-source model on an unseen source in a leave-one-dataset-out protocol (Table 3). The discrimination of a model trained on NIH ChestX-ray14 decreases when it is applied to MIMIC-CXR, quantifying the domain-shift penalty that the inter-source setting is designed to expose and against which selective prediction provides a safeguard by deferring uncertain cases.</mark></p>
-<table>
-<caption>Table 3: Leave-one-dataset-out evaluation (model trained on NIH ChestX-ray14, evaluated on MIMIC-CXR). Discrimination decreases on the unseen source, quantifying the domain-shift penalty.</caption>
+<table class="added">
+<caption><mark class="add">Table 3: Leave-one-dataset-out evaluation (model trained on NIH ChestX-ray14, evaluated on MIMIC-CXR). Discrimination decreases on the unseen source, quantifying the domain-shift penalty.</mark></caption>
 <thead>
 <tr><th>Pathology</th><th>In-domain AUC (NIH)</th><th>Out-of-distribution AUC (MIMIC)</th></tr>
 </thead>
@@ -148,7 +150,7 @@
 </tbody>
 </table>
 <p><mark class="add">Domain shift lowers discrimination, but the selective mechanism remains effective on the shifted distribution: deferring the most uncertain predictions improves retained balanced accuracy on the unseen source. Table 4 reports this for the NIH-trained model evaluated on MIMIC-CXR, where all four gains at a coverage of 0.70 have 95% bootstrap confidence intervals excluding zero. The same pattern holds in the reverse direction (a MIMIC-trained model evaluated on NIH ChestX-ray14): deferral improves retained balanced accuracy for Effusion (+0.083 [0.053, 0.114]), Edema (+0.109 [0.044, 0.190]), and Consolidation (+0.069 [0.028, 0.118]). The robustness extends to a geographically independent source: applying the NIH-trained model to PadChest, a Spanish cohort never seen during training, deferral improves retained balanced accuracy for Effusion (+0.054 [0.010, 0.091]), Edema (+0.090 [0.058, 0.110]), and Consolidation (+0.081 [0.059, 0.095]), all with 95% confidence intervals excluding zero. Selective prediction therefore provides a safeguard precisely where it is most needed, on out-of-distribution inputs.</mark></p>
-<table>
+<table class="added">
 <caption><mark class="add">Table 4: Selective balanced accuracy under domain shift (NIH-trained model evaluated on MIMIC-CXR), at full coverage and at a coverage of 0.70. All four gains have 95% bootstrap confidence intervals excluding zero.</mark></caption>
 <thead>
 <tr><th>Pathology</th><th>Balanced accuracy (full coverage)</th><th>Balanced accuracy at 0.70 coverage</th><th>Change (95% CI)</th></tr>
