@@ -74,16 +74,16 @@
 <h3>3.1 Dataset</h3>
 <p>The classification task is formulated as multi-label, wherein each image can simultaneously exhibit one or more of four conditions: Cardiomegaly, Effusion, Edema, and Consolidation. In contrast to single-label classification, this setup accounts for the co-occurrence of multiple pathologies within a single image. To improve generalizability and account for variability in imaging protocols and patient populations, the dataset aggregates samples from multiple publicly available sources. Each image is labeled at the image level, and the labels are not mutually exclusive. The model produces a confidence score for each pathology, which is subsequently used by the rejection mechanism.</p>
 <table>
-<caption>Table 1: Class distribution for the four target pathologies, reported as positive-label counts across the aggregated multi-source pool (distinct from the per-source evaluation splits in Section 4). The dataset is imbalanced, with higher prevalence of Cardiomegaly and Effusion than the rarer Edema and Consolidation, and a substantial number of images carry multiple positive labels.</caption>
+<caption>Table 1: Class distribution of the evaluation data across the three sources (NIH ChestX-ray14, MIMIC-CXR, and PadChest; N = 17,367 frontal images), reported as positive-label counts. The data is imbalanced, with Effusion and Cardiomegaly more prevalent than the rarer Edema and Consolidation, and a subset of images carry multiple positive labels.</caption>
 <thead>
 <tr><th>Category</th><th>Positive count</th><th>Percentage (%)</th></tr>
 </thead>
 <tbody>
-<tr><td>Cardiomegaly</td><td>11919</td><td>9.7</td></tr>
-<tr><td>Effusion</td><td>9353</td><td>7.6</td></tr>
-<tr><td>Edema</td><td>1956</td><td>1.6</td></tr>
-<tr><td>Consolidation</td><td>2650</td><td>2.1</td></tr>
-<tr><td>Multi-Pathology</td><td>3869</td><td>3.1</td></tr>
+<tr><td>Cardiomegaly</td><td>921</td><td>5.3</td></tr>
+<tr><td>Effusion</td><td>1955</td><td>11.3</td></tr>
+<tr><td>Edema</td><td>406</td><td>2.3</td></tr>
+<tr><td>Consolidation</td><td>622</td><td>3.6</td></tr>
+<tr><td>Multi-Pathology</td><td>573</td><td>3.3</td></tr>
 </tbody>
 </table>
 <figure><img src="assets/examples.png" alt="example chest X-rays">
@@ -126,7 +126,7 @@
 </table>
 <figure><img src="assets/selective_bacc_nih22k.png" alt="selective balanced accuracy vs coverage">
 <figcaption>Figure 3: Selective balanced accuracy as a function of coverage for each pathology. Balanced accuracy increases as the most uncertain predictions are deferred.</figcaption></figure>
-<p><mark class="add">On MIMIC-CXR, the same calibrated-threshold analysis yields supported balanced-accuracy gains for three of the four pathologies (Cardiomegaly +0.080 [0.039, 0.122], Effusion +0.064 [0.039, 0.097], Edema +0.090 [0.036, 0.144]; 95% confidence intervals excluding zero), and an independently trained weighted-BCE DenseNet-121 (Section 3.3; validation macro-AUC 0.85) reproduces the improvement across all four pathologies, with balanced-accuracy gains at a coverage of 0.70 of Cardiomegaly 0.78 to 0.90, Effusion 0.78 to 0.85, Edema 0.80 to 0.92, and Consolidation 0.66 to 0.72, indicating the effect is not specific to one backbone or dataset. On PadChest, where the backbone attains strong discrimination (Cardiomegaly AUC 0.90, Effusion 0.96, Consolidation 0.92), deferral improves Cardiomegaly balanced accuracy from 0.81 to 0.90 at a coverage of 0.70 (+0.086 [0.062, 0.110]; 95% confidence interval excluding zero), confirming the benefit on a third, geographically independent cohort.</mark></p>
+<p><mark class="add">On MIMIC-CXR, the same calibrated-threshold analysis yields supported balanced-accuracy gains for three of the four pathologies (Cardiomegaly +0.080 [0.039, 0.122], Effusion +0.064 [0.039, 0.097], Edema +0.090 [0.036, 0.144]; 95% confidence intervals excluding zero), and an independently trained weighted-BCE DenseNet-121 (Section 3.3; validation macro-AUC 0.85) reproduces the improvement on three of the four pathologies, with supported balanced-accuracy gains at a coverage of 0.70 of Cardiomegaly +0.077 [0.033, 0.131], Effusion +0.074 [0.045, 0.102], and Edema +0.094 [0.030, 0.169] (95% confidence intervals excluding zero), indicating the effect is not specific to one backbone or dataset. On PadChest, where the backbone attains strong discrimination (Cardiomegaly AUC 0.90, Effusion 0.96, Consolidation 0.92), deferral improves Cardiomegaly balanced accuracy from 0.81 to 0.90 at a coverage of 0.70 (+0.086 [0.062, 0.110]; 95% confidence interval excluding zero), confirming the benefit on a third, geographically independent cohort.</mark></p>
 
 <h3>4.2 Risk-coverage analysis</h3>
 <p><mark class="add">Figure 4 presents the risk-coverage curve for each pathology, summarized by the area under the curve. As coverage decreases, the model retains its more confident predictions, and the curves quantify the accuracy-coverage trade-off that a deployment can select according to a target risk tolerance.</mark></p>
