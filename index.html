@@ -89,7 +89,7 @@
 </tbody>
 </table>
 <figure><img src="assets/examples.png" alt="example chest X-rays">
-<figcaption><mark class="add">Figure 2: Representative frontal chest radiographs for the four target pathologies, each shown for a case in which the corresponding label is present, illustrating the visual diversity and diagnostic subtlety of the findings.</mark></figcaption></figure>
+<figcaption>Figure 2: Examples of chest X-ray images with their associated pathology labels. The figure displays representative frontal chest radiographs corresponding to various thoracic conditions, including Cardiomegaly, Consolidation, Edema, and Effusion, which are among the four pathologies studied in this work.</figcaption></figure>
 
 <h3>3.2 Data partition for validation and rejection tuning</h3>
 <p>The dataset aggregates chest X-ray images from MIMIC-CXR, NIH ChestX-ray14, and PadChest. Each source uses slightly different imaging protocols, labelling criteria, and patient populations, introducing domain variability. We employ two partitioning strategies. In intra-source splitting, each dataset is split independently into 80% for training and 20% for validation, with all partitions performed at the patient level so that images from the same patient are assigned exclusively to one subset, preventing leakage and reflecting deployment to previously unseen individuals. In inter-source splitting, two or three complete datasets are used for training while the remaining dataset is held out entirely for validation, creating an out-of-distribution test scenario. The intra-source approach supports stable tuning under controlled conditions, while the inter-source setup tests robustness to domain shift.</p>
