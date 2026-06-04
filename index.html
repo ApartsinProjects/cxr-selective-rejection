@@ -100,9 +100,9 @@
 
 <h3>3.4 Rejection mechanism</h3>
 <p><mark class="edit">Rejection is defined independently for each pathology.</mark> For a predicted probability $p$ of a given pathology, the binary entropy is</p>
-<p>$$H(p) = -\,p\log_2 p - (1-p)\log_2(1-p),$$</p>
-<p>which is maximal at the decision boundary and minimal as $p \to 0$ or $p \to 1$. A pathology prediction is rejected when its entropy exceeds a calibrated threshold $\tau_c$,</p>
-<p>$$\text{reject pathology } c \iff H(p_c) > \tau_c.$$</p>
+<p>$$H(p_i) = -\left[\,p_i\log_2 p_i + (1-p_i)\log_2(1-p_i)\,\right],$$</p>
+<p>which is maximal at the decision boundary and minimal as $p \to 0$ or $p \to 1$. A pathology prediction is rejected when its entropy exceeds a calibrated threshold $\tau_i$,</p>
+<p>$$\text{reject class } i \iff H(p_i) > \tau_i.$$</p>
 <p><mark class="edit">Selective prediction is applied independently for each pathology: a finding is deferred when the model cannot generate a sufficiently reliable prediction for that condition. Acceptance corresponds to a partial-label output and is not a global clearance of the image, since other findings for the same image may remain uncertain. Rejection rates are therefore computed and reported per pathology, aligning with a clinical decision-support workflow in which uncertain findings are deferred for expert review while confident predictions remain available.</mark></p>
 <p><mark class="add">An equivalent view of this rule is interval-based: a class is treated as confident when a calibrated interval around its probability lies entirely on one side of the decision boundary. On a deterministic backbone this interval rule is a monotone function of the distance of the probability from the boundary, so it induces the same selective ordering as entropy thresholding; we therefore adopt the single entropy-based rule. Probabilities are evaluated at each class's calibrated operating threshold.</mark> Thresholds are selected globally or per class on a held-out calibration subset.</p>
 
@@ -203,7 +203,7 @@
 <li>Lakhani, P., Sundaram, B. (2017). Deep learning at chest radiography: Automated classification of pulmonary tuberculosis. <em>Radiology</em>, 284(2), 574-582.</li>
 <li>Majkowska, A. E., et al. (2020). Chest radiograph interpretation with deep learning models. <em>Radiology</em>, 294(2), 421-431.</li>
 <li>Park, S., et al. (2022). Self-evolving vision transformer for chest X-ray diagnosis through knowledge distillation. <em>Nature Communications</em>, 13, 3848.</li>
-<li>Cohen, J. P., Viviano, J., Morrison, P., Brooks, R., Hashir, M., Bertrand, H. (2020). TorchXRayVision: A library of chest X-ray datasets and models.</li>
+<li>Cohen, J. P., Viviano, J., Morrison, P., Brooks, R., Hashir, M., Bertrand, H. (2020). TorchXRayVision: A library of chest X-ray datasets and models. arXiv:2111.00595.</li>
 <li>Wang, X., et al. (2017). ChestX-ray8. <em>CVPR 2017</em>, 3462-3471.</li>
 <li>Johnson, A. E., et al. (2019). MIMIC-CXR-JPG, a large publicly available database of labeled chest radiographs. arXiv:1901.07042.</li>
 <li>Bustos, A., Pertusa, A., Salinas, J. M., de la Iglesia-Vaya, M. (2020). PadChest: A large chest X-ray image dataset with multi-label annotated reports. <em>Medical Image Analysis</em>, 66, 101797.</li>
@@ -218,8 +218,8 @@
 <li>Geifman, Y., El-Yaniv, R. (2019). SelectiveNet: A deep neural network with an integrated reject option. <em>ICML 2019</em>, 2151-2160.</li>
 <li>Lakshminarayanan, B., Pritzel, A., Blundell, C. (2017). Simple and scalable predictive uncertainty estimation using deep ensembles. <em>NeurIPS 30</em>, 6405-6416.</li>
 <li>Fisch, A., Jaakkola, T. S., Barzilay, R. (2022). Calibrated selective classification. <em>Transactions on Machine Learning Research</em>.</li>
-<li>Cattelan, L., Silva, R. (2024). How to fix a broken confidence estimator: A simple approach for post-hoc deep model calibration. <em>UAI 2024</em>.</li>
-<li>Rabanser, S., Thudi, A., Hamidieh, K., Dziedzic, A., Papernot, N. (2022). Selective classification via neural network training dynamics. <em>UAI 2022</em>.</li>
+<li>Cattelan, L., Silva, R. (2024). How to fix a broken confidence estimator: evaluating post-hoc methods for selective classification with deep neural networks. <em>UAI 2024</em>. arXiv:2305.15508.</li>
+<li>Rabanser, S., Thudi, A., Hamidieh, K., Dziedzic, A., Papernot, N. (2022). Selective classification via neural network training dynamics. <em>UAI 2022</em>. arXiv:2205.13532.</li>
 <li>Kompa, B., Snoek, J., Beam, A. L. (2021). Second opinion needed: Communicating uncertainty in medical machine learning. <em>NPJ Digital Medicine</em>, 4, 4.</li>
 <li>Faghani, S., et al. (2023). Quantifying uncertainty in deep learning of radiologic images. <em>Radiology</em>, 308(2).</li>
 <li>Whata, A., et al. (2024). Uncertainty quantification in multi-class image classification using chest X-ray images of COVID-19 and pneumonia. <em>Frontiers in Artificial Intelligence</em>, 7, 1410841.</li>
