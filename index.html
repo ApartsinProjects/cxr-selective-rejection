@@ -153,7 +153,7 @@
 <h3>4.2 Risk-coverage analysis</h3>
 <p><mark class="add">Figure 6 presents the risk-coverage curve for each pathology, summarized by the area under the curve. As coverage decreases, the model retains its more confident predictions, and the curves quantify the accuracy-coverage trade-off that a deployment can select according to a target risk tolerance.</mark></p>
 <figure><img src="assets/e1_risk_coverage_nih22k.png" alt="risk-coverage curves">
-<figcaption><mark class="add">Figure 6: Risk-coverage curves per pathology. The retained-prediction performance is traced against coverage as the entropy threshold varies. Area under the risk-coverage curve over the plotted coverage range (AURC; lower is better): Cardiomegaly 0.185, Effusion 0.179, Edema 0.222, Consolidation 0.238.</mark></figcaption></figure>
+<figcaption><mark class="add">Figure 6: Risk-coverage curves per pathology. The retained-prediction performance is traced against coverage as the entropy threshold varies. Area under the risk-coverage curve over the plotted coverage range (AURC; lower is better): Cardiomegaly 0.207, Effusion 0.189, Edema 0.207, Consolidation 0.228.</mark></figcaption></figure>
 
 <h3>4.3 Out-of-distribution evaluation</h3>
 <p><mark class="add">To assess behaviour under domain shift, we evaluate a single-source model on an unseen source in a leave-one-dataset-out protocol (Table 3). The discrimination of a model trained on NIH ChestX-ray14 decreases when it is applied to MIMIC-CXR, quantifying the domain-shift penalty that the inter-source setting is designed to expose and against which selective prediction provides a safeguard by deferring uncertain cases.</mark></p>
@@ -184,7 +184,7 @@
 </table>
 
 <h3>4.4 Threshold sensitivity</h3>
-<p><mark class="add">Figure 7 traces the rejection rate and retained performance across calibration percentiles. Selective performance varies smoothly with the calibration percentile, so the accuracy-coverage trade-off is a controllable design parameter that can be set to a clinical risk tolerance. At a fixed calibration percentile the induced rejection rate is class-specific: it is highest for the least-confident pathology (Consolidation, up to 0.57 at the 0.70 percentile) and lowest for the better-calibrated ones (Cardiomegaly and Edema, near 0.33 to 0.36), so abstention concentrates on the findings the model is least certain about.</mark></p>
+<p><mark class="add">Figure 7 traces the rejection rate and retained performance across calibration percentiles. Selective performance varies smoothly with the calibration percentile, so the accuracy-coverage trade-off is a controllable design parameter that can be set to a clinical risk tolerance. At a fixed calibration percentile the induced rejection rate is class-specific: it is highest for the least-confident pathology (Consolidation, up to 0.57 at the 0.70 percentile) and lowest for the better-calibrated ones (Cardiomegaly and Edema, near 0.38 to 0.39), so abstention concentrates on the findings the model is least certain about.</mark></p>
 <figure><img src="assets/e4_threshold_sweep_nih22k.png" alt="threshold sensitivity">
 <figcaption><mark class="add">Figure 7: Threshold sensitivity. Rejection rate and retained performance as a function of the calibration percentile.</mark></figcaption></figure>
 
