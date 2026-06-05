@@ -20,6 +20,7 @@
  mark.add{background:#d8f5dd;padding:0 1px}   /* added in this version */
  mark.edit{background:#fff3b0;padding:0 1px}  /* revised in this version */
  table.added td{background:#d8f5dd}   /* table added this version */
+table.added td.grp{background:#c2e6cb;text-align:left}  /* transfer-direction group header row */
  table.edited td{background:#fff3b0} /* table values revised this version */
  .keynote{font-size:.78rem;color:#777;font-style:italic;text-align:center;margin:.4rem 0 1.4rem}
  #nav{position:fixed;top:10px;right:10px;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.15);padding:8px 10px;font-family:Arial,sans-serif;font-size:.8rem;z-index:99}
@@ -148,7 +149,7 @@
 <h3>4.3 Out-of-distribution evaluation</h3>
 <p><mark class="add">To assess behaviour under domain shift, we evaluate a single-source model on an unseen source in a leave-one-dataset-out protocol (Table 3). The discrimination of a model trained on NIH ChestX-ray14 decreases when it is applied to MIMIC-CXR, quantifying the domain-shift penalty that the inter-source setting is designed to expose and against which selective prediction provides a safeguard by deferring uncertain cases.</mark></p>
 <table class="added">
-<caption><mark class="add">Table 3: Leave-one-dataset-out evaluation (model trained on NIH ChestX-ray14, evaluated on MIMIC-CXR). Discrimination decreases on the unseen source, quantifying the domain-shift penalty.</mark></caption>
+<caption><mark class="add">Table 3: Leave-one-dataset-out evaluation (model trained on NIH ChestX-ray14, evaluated on MIMIC-CXR). Discrimination decreases on the unseen source, quantifying the domain-shift penalty; selective prediction addresses this penalty by recovering retained balanced accuracy on the shifted distribution (Table 4).</mark></caption>
 <thead>
 <tr><th>Pathology</th><th>In-domain AUC (NIH)</th><th>Out-of-distribution AUC (MIMIC)</th></tr>
 </thead>
@@ -159,18 +160,29 @@
 <tr><td>Consolidation</td><td>0.793</td><td>0.694</td></tr>
 </tbody>
 </table>
-<p><mark class="add">Domain shift lowers discrimination, but the selective mechanism remains effective on the shifted distribution: deferring the most uncertain predictions improves retained balanced accuracy on the unseen source. Table 4 reports this for the NIH-trained model evaluated on MIMIC-CXR, where all four gains at a coverage of 0.70 have 95% bootstrap confidence intervals excluding zero. The same pattern holds in the reverse direction (a MIMIC-trained model evaluated on NIH ChestX-ray14): deferral improves retained balanced accuracy for all four pathologies (Cardiomegaly +0.098 [0.004, 0.204], Effusion +0.081 [0.050, 0.109], Edema +0.138 [0.055, 0.225], Consolidation +0.063 [0.014, 0.109]). The robustness extends to a geographically independent source: applying the NIH-trained model to PadChest, a Spanish cohort never seen during training, deferral improves retained balanced accuracy for all four pathologies (Cardiomegaly +0.078 [0.065, 0.090], Effusion +0.074 [0.058, 0.088], Edema +0.045 [0.025, 0.067], Consolidation +0.059 [0.007, 0.107]), all with 95% confidence intervals excluding zero. Selective prediction therefore provides a safeguard precisely where it is most needed, on out-of-distribution inputs.</mark></p>
+<p><mark class="add">Domain shift lowers discrimination, but the selective mechanism remains effective on the shifted distribution: deferring the most uncertain predictions improves retained balanced accuracy on the unseen source. Table 4 reports this across all three leave-one-dataset-out transfer directions: the NIH-trained model evaluated on MIMIC-CXR, the reverse direction (a MIMIC-trained model evaluated on NIH ChestX-ray14), and the NIH-trained model applied to PadChest, a geographically independent Spanish cohort never seen during training. In every direction, deferral improves retained balanced accuracy for all four pathologies, with a relative reduction in balanced error of 7 to 53% and 95% bootstrap confidence intervals excluding zero throughout. Selective prediction therefore provides a safeguard precisely where it is most needed, on out-of-distribution inputs.</mark></p>
 <table class="added">
-<caption><mark class="add">Table 4: Selective balanced accuracy under domain shift (NIH-trained model evaluated on MIMIC-CXR), at full coverage and at a coverage of 0.70. All four gains have 95% bootstrap confidence intervals excluding zero. The final column reports the balanced-error reduction (relative decrease in balanced error) on the shifted source.</mark></caption>
-<colgroup><col style="width:21%"><col style="width:20%"><col style="width:20%"><col style="width:23%"><col style="width:16%"></colgroup>
+<caption><mark class="add">Table 4: Selective balanced accuracy under domain shift across all three leave-one-dataset-out transfer directions, at full coverage and at a coverage of 0.70. Every one of the twelve gains has a 95% bootstrap confidence interval excluding zero. Balanced-error reduction is the relative decrease in balanced error (one minus balanced accuracy) on the shifted source.</mark></caption>
+<colgroup><col style="width:24%"><col style="width:27%"><col style="width:21%"><col style="width:28%"></colgroup>
 <thead>
-<tr><th>Pathology</th><th>Balanced accuracy (full coverage)</th><th>Balanced accuracy at 0.70 coverage</th><th>Change (95% CI)</th><th>Balanced-error reduction</th></tr>
+<tr><th>Pathology</th><th>Balanced accuracy (full &rarr; 0.70 coverage)</th><th>Balanced-error reduction</th><th>Change (95% CI)</th></tr>
 </thead>
 <tbody>
-<tr><td>Cardiomegaly</td><td>0.632</td><td>0.676</td><td>+0.044 [0.033, 0.058]</td><td>12%</td></tr>
-<tr><td>Effusion</td><td>0.716</td><td>0.787</td><td>+0.071 [0.059, 0.081]</td><td>25%</td></tr>
-<tr><td>Edema</td><td>0.673</td><td>0.695</td><td>+0.022 [0.010, 0.035]</td><td>7%</td></tr>
-<tr><td>Consolidation</td><td>0.619</td><td>0.668</td><td>+0.049 [0.022, 0.076]</td><td>13%</td></tr>
+<tr><td colspan="4" class="grp"><b>NIH &rarr; MIMIC</b></td></tr>
+<tr><td>Cardiomegaly</td><td>0.632 &rarr; 0.676</td><td>12%</td><td>+0.044 [0.033, 0.058]</td></tr>
+<tr><td>Effusion</td><td>0.716 &rarr; 0.787</td><td>25%</td><td>+0.071 [0.059, 0.081]</td></tr>
+<tr><td>Edema</td><td>0.673 &rarr; 0.695</td><td>7%</td><td>+0.022 [0.010, 0.035]</td></tr>
+<tr><td>Consolidation</td><td>0.619 &rarr; 0.668</td><td>13%</td><td>+0.049 [0.022, 0.076]</td></tr>
+<tr><td colspan="4" class="grp"><b>MIMIC &rarr; NIH</b></td></tr>
+<tr><td>Cardiomegaly</td><td>0.604 &rarr; 0.702</td><td>25%</td><td>+0.098 [0.004, 0.204]</td></tr>
+<tr><td>Effusion</td><td>0.705 &rarr; 0.785</td><td>27%</td><td>+0.080 [0.050, 0.109]</td></tr>
+<tr><td>Edema</td><td>0.740 &rarr; 0.878</td><td>53%</td><td>+0.138 [0.055, 0.225]</td></tr>
+<tr><td>Consolidation</td><td>0.647 &rarr; 0.711</td><td>18%</td><td>+0.064 [0.014, 0.109]</td></tr>
+<tr><td colspan="4" class="grp"><b>NIH &rarr; PadChest</b></td></tr>
+<tr><td>Cardiomegaly</td><td>0.761 &rarr; 0.839</td><td>33%</td><td>+0.078 [0.065, 0.090]</td></tr>
+<tr><td>Effusion</td><td>0.833 &rarr; 0.907</td><td>44%</td><td>+0.074 [0.058, 0.088]</td></tr>
+<tr><td>Edema</td><td>0.793 &rarr; 0.838</td><td>22%</td><td>+0.045 [0.025, 0.067]</td></tr>
+<tr><td>Consolidation</td><td>0.704 &rarr; 0.763</td><td>20%</td><td>+0.059 [0.007, 0.107]</td></tr>
 </tbody>
 </table>
 
