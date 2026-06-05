@@ -127,7 +127,7 @@
 <tbody>
 <tr><td>Cardiomegaly</td><td>0.757</td><td>0.844</td><td>+0.087 [0.058, 0.115]</td></tr>
 <tr><td>Effusion</td><td>0.780</td><td>0.855</td><td>+0.075 [0.064, 0.087]</td></tr>
-<tr><td>Edema</td><td>0.754</td><td>0.839</td><td>+0.084 [0.052, 0.123]</td></tr>
+<tr><td>Edema</td><td>0.754</td><td>0.839</td><td>+0.085 [0.052, 0.123]</td></tr>
 <tr><td>Consolidation</td><td>0.730</td><td>0.797</td><td>+0.067 [0.049, 0.086]</td></tr>
 </tbody>
 </table>
@@ -146,7 +146,7 @@
 <tbody>
 <tr><td>Cardiomegaly</td><td>&minus;0.001</td><td>+0.087</td><td>identical to entropy</td></tr>
 <tr><td>Effusion</td><td>0.000</td><td>+0.075</td><td>identical to entropy</td></tr>
-<tr><td>Edema</td><td>0.000</td><td>+0.084</td><td>identical to entropy</td></tr>
+<tr><td>Edema</td><td>0.000</td><td>+0.085</td><td>identical to entropy</td></tr>
 <tr><td>Consolidation</td><td>0.000</td><td>+0.067</td><td>identical to entropy</td></tr>
 </tbody>
 </table>
@@ -178,7 +178,7 @@
 </thead>
 <tbody>
 <tr><td>Cardiomegaly</td><td>0.632</td><td>0.676</td><td>+0.044 [0.033, 0.058]</td></tr>
-<tr><td>Effusion</td><td>0.716</td><td>0.787</td><td>+0.070 [0.059, 0.081]</td></tr>
+<tr><td>Effusion</td><td>0.716</td><td>0.787</td><td>+0.071 [0.059, 0.081]</td></tr>
 <tr><td>Edema</td><td>0.673</td><td>0.695</td><td>+0.022 [0.010, 0.035]</td></tr>
 <tr><td>Consolidation</td><td>0.619</td><td>0.668</td><td>+0.049 [0.022, 0.076]</td></tr>
 </tbody>
@@ -208,7 +208,7 @@
 <p>We presented a framework for multi-label chest X-ray diagnosis that integrates a DenseNet-121 backbone with <mark class="edit">a per-pathology entropy-based rejection mechanism and a quantile-based calibration of global or class-specific thresholds.</mark> <mark class="edit">Evaluated with risk-coverage analysis and balanced accuracy under bootstrap confidence intervals, and with a formal leave-one-dataset-out assessment, selective prediction improves the reliability of accepted predictions and provides interpretable control over the accuracy-coverage trade-off.</mark> The validated regime and its boundary conditions are detailed in Section 5.1. Future work will incorporate complementary clinical information, extend the approach to additional disease classes, and explore Bayesian and ensemble uncertainty estimators. <mark class="add">Code and frozen per-image predictions are released to support reproduction.</mark></p>
 
 <h2>Data Availability</h2>
-<p>All datasets used in this study are publicly available. CheXpert: stanfordmlgroup.github.io/competitions/chexpert/; MIMIC-CXR: physionet.org/content/mimic-cxr/2.0.0/; NIH ChestX-ray14: nihcc.app.box.com/v/ChestXray-NIHCC; PadChest: bimcv.cipf.es/bimcv-projects/padchest/.</p>
+<p>All datasets used in this study are publicly available. CheXpert: stanfordmlgroup.github.io/competitions/chexpert/; MIMIC-CXR-JPG: physionet.org/content/mimic-cxr-jpg/2.1.0/; NIH ChestX-ray14: nihcc.app.box.com/v/ChestXray-NIHCC; PadChest: bimcv.cipf.es/bimcv-projects/padchest/.</p>
 <h2><mark class="add">Code Availability</mark></h2>
 <p><mark class="add">Code, configuration files, and frozen per-image predictions used to reproduce every table and figure in this paper are available at github.com/ApartsinProjects/cxr-selective-rejection-code.</mark></p>
 <h2>Funding</h2>
