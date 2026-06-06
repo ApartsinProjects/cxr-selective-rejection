@@ -24,7 +24,7 @@
 <p>We are grateful to the reviewer for the thorough and constructive reading of our manuscript across the previous rounds. The comments have materially improved the work, and we have done our best to address each of the three remaining concerns in full. For every point we state the change, indicate exactly where it appears in the revised manuscript (section, table, figure, or equation), and give the supporting evidence. All numbers come from a complete reproduction of the pipeline on NIH ChestX-ray14, MIMIC-CXR, and PadChest, on both the released TorchXRayVision DenseNet-121 (Cohen et al., 2020) and an independently trained weighted binary cross-entropy model, with non-parametric bootstrap confidence intervals throughout. Newly added or rewritten passages are highlighted in the manuscript so the changes are easy to locate.</p>
 
 <h2>Concern 1: OOD / domain-shift and risk-coverage evaluation</h2>
-<p class="rev">"The inter-source evaluation is a proxy; a formal OOD assessment and complete risk-coverage analysis are missing, and the manuscript itself defers these to future work."</p>
+<p class="rev">"The concern regarding OOD/domain-shift evaluation has not been fully resolved. The authors now describe the inter-source evaluation as a proxy domain-shift scenario and discuss the weaker NIH ChestX-ray14 performance, but this still falls short of a formal and systematic OOD robustness analysis. In addition, the manuscript itself appears to acknowledge that explicit OOD behavior and complete risk-coverage analysis remain future work. Therefore, the response to the reviewer's request for a dedicated OOD assessment and comprehensive risk-coverage evaluation is only partial."</p>
 <div class="res">
 <p><b>We agree, and we thank the reviewer for pressing on this point.</b> A formal out-of-distribution assessment and a complete risk-coverage analysis have been added, and the internal contradiction the reviewer rightly noted (a contribution claiming domain-shift robustness while the limitations deferred it) has been removed.</p>
 <ul>
@@ -38,7 +38,7 @@
 </div>
 
 <h2>Concern 2: rejection mechanism ambiguity, interval method, equations</h2>
-<p class="rev">"Image-level vs label-level inconsistency; the interval method is not defined for deterministic outputs; equations are incomplete."</p>
+<p class="rev">"The rejection mechanism remains technically ambiguous, particularly in the multi-label setting. Although the authors state that rejection is intended to operate at the pathology/class level, the manuscript still contains wording suggesting that an image is accepted if at least one class prediction is confident and rejected only if all classes are uncertain. This creates a conceptual inconsistency between image-level and label-level rejection. Moreover, the interval-based rejection method is not sufficiently defined, since the manuscript does not clearly explain how confidence intervals are derived for the deterministic DenseNet-121 probability outputs. Some key mathematical expressions related to entropy and interval-based rejection also appear incomplete or improperly rendered."</p>
 <div class="res">
 <p><b>We thank the reviewer for catching these; they were genuine sources of ambiguity, and we have corrected each.</b></p>
 <ul>
@@ -50,7 +50,7 @@
 </div>
 
 <h2>Concern 3: interpretation stronger than evidence; Grad-CAM; reproducibility</h2>
-<p class="rev">"Rejection does not consistently improve AUC (it decreases for NIH / Consolidation at high rejection); broad reliability claims should be moderated; gradient-volatility does not replace Grad-CAM; reproducibility details are missing."</p>
+<p class="rev">"The interpretation of the results is stronger than the reported evidence supports. Rejection does not consistently improve AUC or F1 across all datasets and pathologies; in some cases, especially in the NIH dataset and for Consolidation, performance decreases after rejection while rejection rates are relatively high. Therefore, broad claims that the rejection mechanisms improve diagnostic reliability should be moderated. The added gradient-volatility visualization is useful, but it does not fully replace the clinically interpretable borderline Grad-CAM or attention-map examples requested by the reviewer. In addition, several reproducibility details remain insufficiently specified, including exact training hyperparameters, random seeds, image preprocessing details, and threshold-sensitivity analysis."</p>
 <div class="res">
 <p><b>The reviewer is entirely correct, and we are grateful for the correction.</b> We have rebuilt the results around the metric the evidence actually supports.</p>
 <ul>
