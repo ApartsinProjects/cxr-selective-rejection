@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Response to Reviewers — Selective Multipathology Chest X-Ray Classification via Rejection Mechanisms</title>
+<style>
+ body{font-family:'Times New Roman',Georgia,serif;max-width:1000px;margin:0 auto;padding:2.5rem 1rem 4rem;line-height:1.55;color:#111}
+ h1{font-size:1.4rem;text-align:center;margin-bottom:.2rem}
+ .sub{text-align:center;color:#555;font-size:.9rem;margin-bottom:1.6rem}
+ h2{font-size:1.18rem;margin-top:2rem;border-bottom:2px solid #333;padding-bottom:4px}
+ h3{font-size:1.02rem;margin-top:1.2rem;color:#222}
+ p{margin:.6rem 0}
+ table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.85rem}
+ th,td{border:1px solid #999;padding:6px 9px;text-align:left;vertical-align:top}
+ th{background:#eee;font-weight:bold}
+ td.n{width:3%;text-align:center;font-weight:bold}
+ td.loc{width:14%;font-size:.82rem;color:#333}
+ .ask{width:40%}
+ .thanks{background:#eef6ff;border-left:4px solid #3a7bd5;padding:8px 12px;margin:.6rem 0;font-size:.92rem}
+ .todo{background:#fff3b0;padding:1px 5px;border-radius:3px;font-size:.82rem}
+ .note{background:#f4f4f4;border-left:4px solid #999;padding:8px 12px;font-size:.86rem;margin:1rem 0}
+ code{background:#f2f2f2;padding:1px 4px;border-radius:3px;font-family:Consolas,monospace;font-size:.85em}
+ em.q{color:#444}
+ @media print{a{color:#111;text-decoration:none}}
+</style>
+</head>
+<body>
+
+<h1>Response to Reviewers</h1>
+<p class="sub"><strong>Manuscript:</strong> Selective Multipathology Chest X-Ray Classification via Rejection Mechanisms<br>
+Decision: Minor Revision &middot; Scientific Reports</p>
+
+<p>We thank the Editor and all reviewers for their careful and constructive reading of our manuscript. The comments have materially improved the paper. Below we respond to each point individually; the corresponding changes are highlighted in the revised manuscript. All new or edited text appears in colour in the tracked version. Section and figure numbers below refer to the revised manuscript.</p>
+
+<div class="note"><strong>Summary of the main changes.</strong> (1) We sharpened the novelty statement to separate our per-pathology, post-hoc rejection-and-calibration layer from the pre-existing backbone classifier. (2) We added a workflow-oriented discussion of the operating point, with literature precedent for the rejection rate and a new per-image co-deferral analysis. (3) We expanded the comparison with other uncertainty-estimation methods (Monte Carlo Dropout, deep ensembles, temperature scaling, conformal prediction), with direct empirical results where feasible. (4) We strengthened the statistical reporting (balanced-accuracy rationale, multiple-comparison stance, a paired significance test versus random rejection, and a threshold-stability analysis across repeated splits). (5) We clarified the in-distribution versus out-of-distribution distinction, tempered the domain-shift and Grad-CAM interpretations, added compute/environment reporting, an abbreviations list, and made editorial improvements for length and clarity.</div>
+
+<!-- ===================== EDITOR ===================== -->
+<h2>Editor</h2>
+<div class="thanks">We thank the Editor for handling our manuscript and for the opportunity to revise. We have ensured that the results are reported accurately, that any potentially overstated conclusions have been rewritten in more measured terms (notably the domain-shift robustness and Grad-CAM interpretations), and that the limitations of the work are stated explicitly in a dedicated subsection (Section 5.1).</div>
+
+<!-- ===================== REVIEWER 2 ===================== -->
+<h2>Reviewer 2</h2>
+<div class="thanks">We thank Reviewer 2 for the positive assessment and for confirming that our previous revision adequately addressed the earlier concerns. We are grateful for the reviewer's time across both rounds.</div>
+
+<!-- ===================== REVIEWER 3 ===================== -->
+<h2>Reviewer 3</h2>
+<div class="thanks">We thank Reviewer 3 for a thorough and constructive review that has substantially strengthened the methodological rigour and reproducibility of the paper. We address each point below.</div>
+<table>
+<thead><tr><th class="n">#</th><th class="ask">Comment</th><th>Response and change made</th><th class="loc">Location</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="ask"><em class="q">Methodological novelty appears limited; clarify what distinguishes the approach from SelectiveNet and entropy-based rejection, and whether the novelty lies in the per-pathology strategy, the calibration, or the multi-label setting.</em></td>
+<td>We now state the novelty explicitly. Unlike SelectiveNet, which jointly trains a dedicated selection head end-to-end to optimise a single global accuracy-coverage trade-off, our framework applies a <em>post-hoc, per-pathology</em> entropy threshold to a frozen, already-trained multi-label backbone, with each pathology's threshold calibrated independently by quantile calibration. The contribution is this per-pathology rejection-and-calibration layer and its multi-label, multi-dataset evaluation, not the classifier, which is adopted unchanged from prior work.</td><td class="loc">§1 (contributions); §2.2</td></tr>
+<tr><td class="n">2</td><td class="ask"><em class="q">Rejecting ~30% of predictions may be a substantial radiologist workload; discuss clinical acceptability, workflow efficiency, and the accuracy-vs-burden balance.</em></td>
+<td>We added a workflow-oriented discussion. We clarify that 30% is a <em>per-pathology</em> deferral rate, not a fraction of full studies requiring re-read, and that the rate is a tunable per-pathology quantile (Figure 7) a deployment sets to match reviewer capacity. We note that this rate sits within the standard selective-classification operating range (SelectiveNet reports 10–30% rejection) and is comparable to or below flag rates of deployed AI triage systems. A new per-image analysis (below, point on partial labels) shows deferrals concentrate on a minority of harder images, so the per-image burden is lower than the marginal rate suggests.</td><td class="loc">§5; §3.4</td></tr>
+<tr><td class="n">3</td><td class="ask"><em class="q">The study is entirely retrospective; discuss integration into real workflows and the need for prospective/reader-study validation.</em></td>
+<td>We expanded Section 5.1 to describe how a deferred case would enter a radiologist worklist as a flagged, per-finding item for second-read or priority-read, and we state explicitly that prospective validation and a reader study quantifying the clinical value of the deferred-case workflow are necessary next steps that the present retrospective evaluation does not establish.</td><td class="loc">§5.1</td></tr>
+<tr><td class="n">4</td><td class="ask"><em class="q">Labels derive from public datasets with known noise; discuss the impact on uncertainty estimation and whether noisy labels could inflate rejection performance.</em></td>
+<td>We added an explicit caveat: because reference labels carry annotation noise, label errors near the boundary could inflate the apparent benefit (a mislabeled case tends to be both high-entropy and scored as an error before rejection), so part of the measured gain may reflect filtering of label noise. We note this affects the <em>magnitude</em> but not the <em>direction</em> of the reported effect.</td><td class="loc">§5.1</td></tr>
+<tr><td class="n">5</td><td class="ask"><em class="q">Justify the calibration strategy: subset selection, whether calibration was repeated across splits, threshold stability across datasets, and alternatives (temperature/isotonic/Platt scaling).</em></td>
+<td>We now describe the calibration subset (patient-level, disjoint) and report a <strong>ten-split stability analysis</strong>: the per-pathology entropy threshold is stable across random splits (standard deviation ≤0.019 on NIH, ≈0.001 on MIMIC) and the gains remain positive across splits (Cardiomegaly the most split-sensitive). We also evaluated <strong>temperature scaling</strong> as an alternative post-hoc calibration: it improves the expected calibration error but is a monotone rescaling, so it leaves the entropy ordering, and hence the selective gain, unchanged. The same rank-preservation argument applies to Platt scaling and isotonic regression, which are also monotone in the score; we therefore report temperature scaling as their representative (Section 4.1).</td><td class="loc">§3.5; §4.1</td></tr>
+<tr><td class="n">6</td><td class="ask"><em class="q">Provide a comprehensive comparison with Monte Carlo Dropout, Deep Ensembles, temperature-scaled confidence, and conformal prediction.</em></td>
+<td>We expanded Section 2.2 to situate these method families and evaluated <strong>seven post-hoc uncertainty estimators</strong> against single-pass predictive entropy on the same split under an identical selective protocol: (i) margin and (ii) maximum-probability rejection are rank-identical to entropy on a deterministic backbone; (iii) temperature-scaled confidence is a monotone rescaling and therefore rank-preserving (identical selective gain, with improved calibration); (iv) deep-ensemble disagreement across the five public checkpoints does not exceed entropy; (v) test-time-augmentation dispersion has a higher area under the risk-coverage curve than entropy for all four pathologies; (vi) Monte Carlo Dropout (a dropout layer retrofitted on the penultimate features, since the backbone has none) reproduces single-pass entropy and offers no gain; and (vii) Monte Carlo BatchNorm (Teye et&nbsp;al., reusing the network's existing BatchNorm layers, no retraining) improves two pathologies but is worse on the mean. No estimator we tested reliably exceeds single-pass predictive entropy, so we retain the single forward-pass rule for its minimal deployment overhead. We now state this conclusion explicitly in Section 4.1: the proposed single-pass entropy rule is the least expensive of the estimators considered, requiring no retraining, no repeated stochastic passes, and no ensemble, yet it matches or exceeds every alternative for selective deferral, so the cheapest signal is also the most practical to deploy. Conformal prediction is discussed as a complementary, distribution-free framework with a different (set-valued coverage) guarantee, and a fully Bayesian backbone is noted as future work.</td><td class="loc">§2.2; §4.1</td></tr>
+<tr><td class="n">7</td><td class="ask"><em class="q">Statistical analysis: account for multiple comparisons, test between rejection strategies, and justify balanced accuracy as the primary endpoint.</em></td>
+<td>We justify balanced accuracy as the primary endpoint given the class imbalance (3–12% positive), for which plain accuracy would be dominated by the negative class. We state our multiple-comparison stance (per-pathology intervals reported as computed, each pathology a pre-registered hypothesis by design, so readers may apply their own correction). We added a <strong>paired bootstrap test</strong> of entropy versus random rejection: the per-resample difference has a 95% CI excluding zero for all four pathologies on NIH ChestX-ray14.</td><td class="loc">§4 intro; §4.1</td></tr>
+<tr><td class="n">8</td><td class="ask"><em class="q">Minor: several sections are long/repetitive; consolidate methodological details that appear in both Methods and Discussion.</em></td>
+<td>We tightened the exposition so that the entropy/rejection rule is defined formally once, in the Methods (Section 3.4), and referenced rather than re-derived in the Introduction and Discussion; the Discussion was shortened accordingly.</td><td class="loc">§3.4; §5</td></tr>
+<tr><td class="n">9</td><td class="ask"><em class="q">Figure 1 should be simplified.</em></td>
+<td>We simplified Figure 1 to the four core pipeline stages (classify → entropy → threshold compare → accept/defer), removing detail duplicated in the caption.</td><td class="loc">Figure 1</td></tr>
+<tr><td class="n">10</td><td class="ask"><em class="q">Figure 8 (Grad-CAM) is qualitative; quantitative interpretation would strengthen it.</em></td>
+<td>Consistent with Reviewer 5's related comment, we now present Figure 8 explicitly as a qualitative illustration rather than a mechanistic validation, and base the paper's quantitative conclusions on the risk-coverage and balanced-accuracy analyses. As an internal check we computed a per-image CAM dispersion statistic on accepted versus deferred cases; deferred predictions were significantly more diffuse for the pathologies where the diffuse/focal contrast applies (Edema, Consolidation), while Cardiomegaly's failure mode is projection geometry (Section 5) rather than activation spread. Because the effect is pathology-dependent, we retain Grad-CAM as illustration and do not over-interpret it quantitatively; this exploratory dispersion check is not added to the manuscript, precisely so that Figure 8 remains an illustrative aid rather than a quantitative claim.</td><td class="loc">§4.5</td></tr>
+<tr><td class="n">11</td><td class="ask"><em class="q">Report computational requirements, inference time, and implementation cost; provide hardware and software details.</em></td>
+<td>We added a paragraph (Section 3.3) reporting the hardware (RTX 4090 for training; RTX 2060 for inference), the training wall-clock for the independently trained model (under four minutes; ~24 s/epoch; early stop at epoch 9), inference throughput (~60 ms/image), and the software environment (PyTorch 2.4/CUDA 12.4, TorchXRayVision 1.3.4); we note the rejection mechanism operates on precomputed probabilities and adds negligible overhead.</td><td class="loc">§3.3</td></tr>
+<tr><td class="n">12</td><td class="ask"><em class="q">Standardize abbreviations throughout.</em></td>
+<td>We added an Abbreviations list and ensured consistent first-use expansion (AUC, AURC, BCE, CI, Grad-CAM, LODO, etc.).</td><td class="loc">Abbreviations</td></tr>
+<tr><td class="n">13</td><td class="ask"><em class="q">English would benefit from professional editing for clarity and conciseness.</em></td>
+<td>We revised the manuscript throughout for clarity and concision.</td><td class="loc">Throughout</td></tr>
+</tbody>
+</table>
+
+<!-- ===================== REVIEWER 4 ===================== -->
+<h2>Reviewer 4</h2>
+<div class="thanks">We thank Reviewer 4 for the encouraging assessment and for situating our work within the broader landscape of trustworthy and multimodal medical AI. We have addressed the points below.</div>
+<table>
+<thead><tr><th class="n">#</th><th class="ask">Comment</th><th>Response and change made</th><th class="loc">Location</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="ask"><em class="q">Begin the Introduction with a broader overview of cancer biology and current therapies; cite "Cancer treatments: Past, present, and future."</em></td>
+<td>We respectfully note that the present study concerns four <em>non-oncologic</em> thoracic findings (Cardiomegaly, Effusion, Edema, Consolidation) rather than oncologic imaging, so a cancer-biology framing would not accurately represent the clinical scope. To acknowledge the broader context the reviewer raises, we added a sentence noting that the need for uncertainty-aware diagnosis spans diagnostic imaging broadly, including but not limited to oncologic applications, before narrowing to the thoracic findings studied here. We hope the reviewer agrees this keeps the framing accurate to the paper's content. We have therefore not cited the suggested oncology-treatment review, as its subject matter (cancer therapeutics) lies outside the scope of a study on non-oncologic thoracic-finding classification, and we prefer to keep the reference list focused on work directly relevant to selective prediction and chest radiography.</td><td class="loc">§1 (opening)</td></tr>
+<tr><td class="n">2</td><td class="ask"><em class="q">Clinical feasibility of the 0.70 operating point: is a ~30% rejection rate acceptable, and is the workload reduction as large as implied?</em></td>
+<td>We added the workflow-oriented discussion described in our response to Reviewer 3 (point 2), including the tunability of the operating point (Figure 7), literature precedent for the rate, and a new per-image co-deferral analysis showing that deferrals concentrate on a minority of harder images.</td><td class="loc">§5; §3.4</td></tr>
+<tr><td class="n">3</td><td class="ask"><em class="q">The comparison is limited to random rejection; discuss/compare Monte Carlo Dropout, Bayesian neural networks, Deep Ensembles, Temperature Scaling, and Evidential Deep Learning.</em></td>
+<td>We expanded the uncertainty-method discussion (Section 2.2) to name and situate these families (Monte Carlo Dropout, Bayesian neural networks, deep ensembles, temperature scaling, evidential deep learning), and added the seven-method empirical comparison detailed in our response to Reviewer 3 (point 6): none of margin, max-probability, temperature-scaled confidence, deep-ensemble disagreement, test-time augmentation, Monte Carlo Dropout, or Monte Carlo BatchNorm reliably exceeds single-pass predictive entropy at the operating point, which motivates the single forward-pass rule. A fully Bayesian backbone and evidential deep learning are noted as directions for future work.</td><td class="loc">§2.2; §4.1; §6</td></tr>
+<tr><td class="n">4</td><td class="ask"><em class="q">Cite "Dynamic Context-guided Feature Fusion Network for gastrointestinal tumor image segmentation" when discussing modern image-analysis architectures.</em></td>
+<td>We thank the reviewer for the pointer. This work addresses tumour <em>segmentation</em> in gastrointestinal imaging, a different modality and a different task with no selective-prediction or rejection component; a citation in the present chest-X-ray classification paper would not, in our assessment, serve the reader. We have respectfully not included it, and have instead broadened the general discussion of uncertainty-aware approaches in Section 2 so the related work remains focused and on topic.</td><td class="loc">§2</td></tr>
+<tr><td class="n">5</td><td class="ask"><em class="q">Cite "Integrating radiomics and gene expression … improved DeepInsight for clear cell renal cell carcinoma"; discuss linking imaging with molecular features.</em></td>
+<td>We agree that multimodal integration is an important direction and have added a forward-looking sentence in the Conclusions noting that extending selective prediction to jointly consider non-imaging clinical information and, eventually, multimodal data (e.g., genomic/transcriptomic features) is a natural next step. The suggested article concerns radiogenomics for clear cell renal cell carcinoma (CT combined with gene expression), which is outside the scope of the present non-oncologic chest-X-ray study; we have therefore made the multimodal point in general terms rather than citing an unrelated oncology application, to keep the reference list relevant to the paper's contribution.</td><td class="loc">§6</td></tr>
+<tr><td class="n">6</td><td class="ask"><em class="q">Cite the review "AI-driven integration of multi-omics and multimodal data for precision medicine" to frame future opportunities.</em></td>
+<td>We share the reviewer's interest in framing this work within precision medicine and have added the forward-looking statement noted above. We were unable to locate a published paper matching the exact title supplied. In any case, a multi-omics precision-oncology review would fall outside the scope of the present non-oncologic chest-X-ray study, so we have kept the future-directions statement general rather than citing an unrelated review. Should the reviewer have a specific reference in mind, we would be glad to consider it if a matching citation can be provided.</td><td class="loc">§6</td></tr>
+</tbody>
+</table>
+
+<!-- ===================== REVIEWER 5 ===================== -->
+<h2>Reviewer 5</h2>
+<div class="thanks">We thank Reviewer 5 for the detailed, point-by-point comments, which have improved the precision of our claims and the clarity of the clinical framing. We respond to each of the ten points below.</div>
+<table>
+<thead><tr><th class="n">#</th><th class="ask">Comment</th><th>Response and change made</th><th class="loc">Location</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="ask"><em class="q">Distinguish more sharply between the novelty of the selective mechanism and the contribution of the pre-trained DenseNet-121 classifier.</em></td>
+<td>We now state explicitly that the classifier is adopted unchanged from prior work and that our contribution is the per-pathology, post-hoc rejection-and-calibration layer (see our response to Reviewer 3, point 1).</td><td class="loc">§1; §2.2</td></tr>
+<tr><td class="n">2</td><td class="ask"><em class="q">Clarify the relationship between calibration thresholds and clinical operating points, and how a practitioner should choose the rejection level in deployment.</em></td>
+<td>We added explicit deployment guidance: a practitioner selects the calibration percentile to match available radiologist capacity, and Figure 7 reports the induced rejection rate and retained performance at each percentile, so a lower percentile is chosen where review capacity is scarce and a higher percentile where the cost of a missed finding is high.</td><td class="loc">§3.5; §5</td></tr>
+<tr><td class="n">3</td><td class="ask"><em class="q">Justify the choice of exactly four pathologies.</em></td>
+<td>We added the rationale: these four are the pathologies common to the label sets of all three source datasets with sufficient positive prevalence for stable per-class calibration, which is what enables the cross-dataset and leave-one-dataset-out comparisons central to the study.</td><td class="loc">§3.1</td></tr>
+<tr><td class="n">4</td><td class="ask"><em class="q">Emphasize the distinction between in-distribution replication and true out-of-distribution evaluation throughout the Results.</em></td>
+<td>We added a reminder at the start of Section 4.1 that the MIMIC-CXR and PadChest results there are in-distribution for the primary backbone, and that the true out-of-distribution evaluation using single-source leave-one-dataset-out models is reported separately in Section 4.3.</td><td class="loc">§4.1; §4.3</td></tr>
+<tr><td class="n">5</td><td class="ask"><em class="q">Discuss whether the balanced-accuracy gains come at an acceptable clinical cost in deferred workload; a stronger workflow analysis would help.</em></td>
+<td>Addressed by the workflow discussion and the per-image co-deferral analysis described in our response to Reviewer 3 (point 2).</td><td class="loc">§5; §3.4</td></tr>
+<tr><td class="n">6</td><td class="ask"><em class="q">The rejection mechanism operates per pathology; discuss how clinicians would handle partially accepted and partially deferred labels on the same image.</em></td>
+<td>We clarified that the intended output is a per-finding confidence flag, analogous to a structured report annotated per finding. We added an empirical <strong>co-deferral analysis</strong>: at the operating point, most images (≈40%) have no finding deferred and only ≈5% have all four deferred, while any two findings are co-deferred at 1.4–1.9× the independence rate, so deferrals cluster on a minority of harder images rather than spreading uniformly.</td><td class="loc">§3.4</td></tr>
+<tr><td class="n">7</td><td class="ask"><em class="q">Provide a clearer comparison of predictive entropy with other uncertainty measures.</em></td>
+<td>Addressed by the expanded uncertainty-method comparison (see our response to Reviewer 3, point 6): entropy, margin, max-probability, temperature-scaled confidence, deep-ensemble disagreement, and Monte Carlo Dropout are compared on the same split.</td><td class="loc">§2.2; §4.1</td></tr>
+<tr><td class="n">8</td><td class="ask"><em class="q">Be more cautious interpreting the domain-shift results: selective prediction improving retained accuracy does not mean the underlying model is robust; it means uncertain cases are filtered more effectively.</em></td>
+<td>We agree and tempered the interpretation. We now state that the improvement in retained balanced accuracy under shift reflects effective filtering of unreliable predictions and does <em>not</em> imply the classifier's discrimination is itself robust (Section 4.3 shows AUC falls substantially under shift); the two observations are complementary rather than contradictory.</td><td class="loc">§5</td></tr>
+<tr><td class="n">9</td><td class="ask"><em class="q">Do not imply the Grad-CAM heatmaps provide strong mechanistic validation of the rejection behaviour.</em></td>
+<td>We agree and revised Section 4.5 to state explicitly that Grad-CAM is an illustrative, qualitative view and not a mechanistic validation; the rejection decision is computed solely from the predicted probability and Grad-CAM is not part of that pathway (see also our response to Reviewer 3, point 10).</td><td class="loc">§4.5</td></tr>
+<tr><td class="n">10</td><td class="ask"><em class="q">Add clinical framing of the rejected cases: what kinds of findings or image conditions most often trigger deferral.</em></td>
+<td>We added a synthesis of what triggers deferral: low-prevalence, harder-to-discriminate findings such as Edema, and, for Cardiomegaly, anteroposterior/portable acquisitions where the cardiothoracic-ratio cue is geometrically less reliable. The common thread is that deferral concentrates where the underlying visual cue is intrinsically weaker.</td><td class="loc">§5</td></tr>
+</tbody>
+</table>
+
+<p style="margin-top:2rem">We believe these revisions address all reviewer and editor comments and have improved the rigour, clarity, and clinical framing of the manuscript. We thank the reviewers again for their constructive feedback and hope the revised version is now suitable for publication.</p>
+<p>Sincerely,<br>The Authors</p>
+
+</body>
+</html>
