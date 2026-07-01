@@ -52,6 +52,16 @@ table.added td.grp{background:#ffe08a;text-align:left}  /* transfer-direction gr
 2 School of Computer Science, Faculty of Sciences, HIT-Holon Institute of Technology, Holon 58102, Israel<br>
 * Corresponding Author: apersteiny@afeka.ac.il</p>
 
+<div class="no-docx" style="text-align:center;font-size:.86rem;border:1px solid #ccc;border-radius:6px;background:#fafafa;padding:.6rem .8rem;margin:1rem auto;max-width:640px;font-family:Arial,sans-serif">
+  <b style="color:#444;text-transform:uppercase;font-size:.72rem;letter-spacing:.03em">Cycle 4 revision &mdash; downloads</b><br>
+  <span style="color:#555">Revised paper (v4):</span>
+    <a href="paperv4.html">HTML</a> &middot; <a href="paperv4.docx">Word</a> &middot; <a href="paperv4.pdf">PDF</a>
+  &nbsp;|&nbsp; <span style="color:#555">Rebuttal, table:</span>
+    <a href="rebuttal_letter.html">HTML</a> &middot; <a href="rebuttal_letter.docx">Word</a> &middot; <a href="rebuttal_letter.pdf">PDF</a>
+  &nbsp;|&nbsp; <span style="color:#555">Rebuttal, bullets:</span>
+    <a href="rebuttal_bullets.html">HTML</a> &middot; <a href="rebuttal_bullets.docx">Word</a> &middot; <a href="rebuttal_bullets.pdf">PDF</a>
+</div>
+
 <h2>Abstract</h2>
 <p class="abstract">Overconfidence in deep learning models poses a significant risk in high-stakes medical imaging tasks, particularly in multi-label classification of chest X-rays, where multiple co-occurring pathologies must be detected simultaneously. This study introduces an uncertainty-aware framework for chest X-ray diagnosis based on a DenseNet-121 backbone, enhanced with <mark class="edit">an entropy-based selective prediction mechanism that abstains, on a per-pathology basis, from predictions whose binary entropy exceeds a calibrated threshold, deferring those findings to clinical experts.</mark> A quantile-based calibration procedure tunes rejection thresholds using either global or class-specific strategies. <mark class="edit">On NIH ChestX-ray14, MIMIC-CXR, and PadChest, selective prediction is evaluated with risk-coverage analysis and balanced accuracy under non-parametric bootstrap confidence intervals. At a calibrated operating point, abstention improves balanced accuracy for all four target pathologies on NIH ChestX-ray14, with gains of 0.07 to 0.09 in balanced accuracy at a coverage of 0.70, a relative reduction in balanced error of 25 to 36% (95% confidence intervals excluding zero). Every target pathology is also supported on MIMIC-CXR and PadChest, on an independently trained model evaluated cross-dataset on a source it never saw, and under leave-one-dataset-out domain shift in both transfer directions.</mark> These results support the integration of selective prediction into AI-assisted diagnostic workflows, providing a practical step toward safer, uncertainty-aware deployment of deep learning in clinical settings.</p>
 <p class="kw"><strong>Keywords:</strong> Chest X-ray classification; Rejection mechanism; Multi-label diagnosis; Selective prediction; Uncertainty estimation; <mark class="add">Risk-coverage analysis; Balanced accuracy; Domain shift</mark></p>
